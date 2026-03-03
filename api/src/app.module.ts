@@ -8,10 +8,32 @@ import { SituacaoElementoModule } from './situacao-elemento/situacao-elemento.mo
 import { TipoElementoModule } from './tipo-elemento/tipo-elemento.module';
 import { ReferenciaModule } from './referencia/referencia.module';
 import { AnotacaoModule } from './anotacao/anotacao.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { DbConfigService, DbConfigServiceUsuario } from './api-config/database.config.service';
+import { UsuarioModule } from './usuario/usuario.module';
 
 @Module({
-  imports: [DocumentoModule, ElementoModule, SituacaoDocumentoModule, SituacaoElementoModule, TipoElementoModule, ReferenciaModule, AnotacaoModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      name: 'default',
+      useClass: DbConfigService,
+      inject: [DbConfigService],
+    }),
+    TypeOrmModule.forRootAsync({
+      name: 'portal-servidor',
+      useClass: DbConfigServiceUsuario,
+      inject: [DbConfigServiceUsuario],
+    }),
+    DocumentoModule, ElementoModule, SituacaoDocumentoModule, SituacaoElementoModule, TipoElementoModule, ReferenciaModule, AnotacaoModule, UsuarioModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    DbConfigService,
+    DbConfigServiceUsuario,
+  ],
 })
 export class AppModule {}
