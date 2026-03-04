@@ -3,7 +3,7 @@ import { SituacaoDocumentoEntity } from 'src/situacao-documento/entities/situaca
 import { UsuarioEntity } from 'src/usuario/entities/usuario.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-@Entity({name: 'Documento', schema: 'dbo' })
+@Entity({name: 'Documento', schema: 'dbo', database: 'dbLegisRedator' })
 export class DocumentoEntity {
     @PrimaryGeneratedColumn({ name: 'idDocumento', primaryKeyConstraintName: 'Documento_PK' })
     id: number;

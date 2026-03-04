@@ -21,12 +21,6 @@ import { UsuarioModule } from './usuario/usuario.module';
     TypeOrmModule.forRootAsync({
       name: 'default',
       useClass: DbConfigService,
-      inject: [DbConfigService],
-    }),
-    TypeOrmModule.forRootAsync({
-      name: 'portal-servidor',
-      useClass: DbConfigServiceUsuario,
-      inject: [DbConfigServiceUsuario],
     }),
     DocumentoModule, ElementoModule, SituacaoDocumentoModule, SituacaoElementoModule, TipoElementoModule, ReferenciaModule, AnotacaoModule, UsuarioModule],
   controllers: [AppController],

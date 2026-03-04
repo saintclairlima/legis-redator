@@ -7,7 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PessoaEntity, SujeitoEntity, UsuarioEntity], 'portal-servidor')],
+  imports: [TypeOrmModule.forFeature([PessoaEntity, SujeitoEntity, UsuarioEntity])],
   exports:[TypeOrmModule],
   controllers: [UsuarioController],
   providers: [UsuarioService],

@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 export class UsuarioService {
   
   constructor(
-    @InjectRepository(UsuarioEntity, 'portal-servidor')
+    @InjectRepository(UsuarioEntity)
     private usuarioRepo: Repository<UsuarioEntity>){}
     
   create(createUsuarioDto: CreateUsuarioDto) {

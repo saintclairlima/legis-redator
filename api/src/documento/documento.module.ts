@@ -7,11 +7,8 @@ import { PessoaEntity, SujeitoEntity, UsuarioEntity } from 'src/usuario/entities
 
 @Module({
   imports: [
-    // TypeOrmModule.forFeature([DocumentoEntity, UsuarioEntity, SujeitoEntity, PessoaEntity]),
-    TypeOrmModule.forFeature([DocumentoEntity]),
-    TypeOrmModule.forFeature([UsuarioEntity, SujeitoEntity, PessoaEntity], 'portal-servidor'),
+    TypeOrmModule.forFeature([DocumentoEntity, UsuarioEntity, SujeitoEntity, PessoaEntity]),
   ],
-  exports:[TypeOrmModule],
   controllers: [DocumentoController],
   providers: [DocumentoService],
 })

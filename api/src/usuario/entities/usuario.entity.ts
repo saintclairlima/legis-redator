@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 
-@Entity({ name: 'pessoa', schema: 'auth', synchronize: false })
+@Entity({ name: 'pessoa', database: 'dbRH_Homolog', schema: 'auth', synchronize: false })
 export class PessoaEntity {
     @PrimaryGeneratedColumn()
     id: number;
@@ -9,7 +9,7 @@ export class PessoaEntity {
     nome: string;
 }
 
-@Entity({ name: 'sujeito', schema: 'auth', synchronize: false })
+@Entity({ name: 'sujeito', database: 'dbRH_Homolog', schema: 'auth', synchronize: false })
 export class SujeitoEntity {
     @PrimaryGeneratedColumn()
     id: number;
@@ -22,7 +22,7 @@ export class SujeitoEntity {
     pessoa: PessoaEntity;
 }
 
-@Entity({ name: 'usuario', schema: 'auth', synchronize: false })
+@Entity({ name: 'usuario', database: 'dbRH_Homolog', schema: 'auth', synchronize: false })
 export class UsuarioEntity {
     @PrimaryGeneratedColumn()
     id: number;
