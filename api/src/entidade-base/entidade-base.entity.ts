@@ -3,33 +3,33 @@ import { CreateDateColumn, Column, ManyToOne, JoinColumn, UpdateDateColumn, Dele
 
 export abstract class EntidadeBaseAuditavel {
 
-    @CreateDateColumn({ type: 'datetime2' })
-    dataCriacao: Date;
+  @CreateDateColumn({ type: 'datetime2' })
+  dataCriacao: Date;
 
-    @Column({ select: false })
-    idUsuarioCriacao: number;
+  @Column({ select: false })
+  idUsuarioCriacao: number;
 
-    @ManyToOne(() => UsuarioEntity, { createForeignKeyConstraints: false, onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-    @JoinColumn({ name: 'idUsuarioCriacao' })
-    usuarioCriacao: UsuarioEntity;
+  @ManyToOne(() => UsuarioEntity, { createForeignKeyConstraints: false, onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: 'idUsuarioCriacao' })
+  usuarioCriacao: UsuarioEntity;
 
-    @UpdateDateColumn({ type: 'datetime2', nullable: true })
-    dataUltimaAlteracao?: Date;
+  @UpdateDateColumn({ type: 'datetime2', nullable: true })
+  dataUltimaAlteracao?: Date;
 
-    @Column({ nullable: true, select: false })
-    idUsuarioAlteracao?: number;
+  @Column({ nullable: true, select: false })
+  idUsuarioAlteracao?: number;
 
-    @ManyToOne(() => UsuarioEntity, { createForeignKeyConstraints: false, onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-    @JoinColumn({ name: 'idUsuarioAlteracao' })
-    usuarioAlteracao?: UsuarioEntity;
+  @ManyToOne(() => UsuarioEntity, { createForeignKeyConstraints: false, onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: 'idUsuarioAlteracao' })
+  usuarioAlteracao?: UsuarioEntity;
 
-    @DeleteDateColumn({ type: 'datetime2', nullable: true})
-    dataExclusao?: Date;
+  @DeleteDateColumn({ type: 'datetime2', nullable: true})
+  dataExclusao?: Date;
 
-    @Column({ nullable: true, select: false })
-    idUsuarioExclusao?: number;
+  @Column({ nullable: true, select: false })
+  idUsuarioExclusao?: number;
 
-    @ManyToOne(() => UsuarioEntity, { createForeignKeyConstraints: false, onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-    @JoinColumn({ name: 'idUsuarioExclusao' })
-    usuarioExclusao?: UsuarioEntity;
+  @ManyToOne(() => UsuarioEntity, { createForeignKeyConstraints: false, onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: 'idUsuarioExclusao' })
+  usuarioExclusao?: UsuarioEntity;
 }
