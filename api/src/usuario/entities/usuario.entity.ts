@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { PortalEntity } from 'src/api-config/portal-entity.decorator';
+import { PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 
-@Entity({ name: 'pessoa', database: 'dbRH_Homolog', schema: 'auth', synchronize: false })
+@PortalEntity('pessoa')
 export class PessoaEntity {
     @PrimaryGeneratedColumn()
     id: number;
@@ -9,7 +10,7 @@ export class PessoaEntity {
     nome: string;
 }
 
-@Entity({ name: 'sujeito', database: 'dbRH_Homolog', schema: 'auth', synchronize: false })
+@PortalEntity('sujeito')
 export class SujeitoEntity {
     @PrimaryGeneratedColumn()
     id: number;
@@ -22,7 +23,7 @@ export class SujeitoEntity {
     pessoa: PessoaEntity;
 }
 
-@Entity({ name: 'usuario', database: 'dbRH_Homolog', schema: 'auth', synchronize: false })
+@PortalEntity('usuario')
 export class UsuarioEntity {
     @PrimaryGeneratedColumn()
     id: number;

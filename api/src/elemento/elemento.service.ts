@@ -1,34 +1,71 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateElementoDto } from './dto/create-elemento.dto';
 import { UpdateElementoDto } from './dto/update-elemento.dto';
 import { ElementoEntity } from './entities/elemento.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SituacaoElementoEntity } from 'src/situacao-elemento/entities/situacao-elemento.entity';
 
 @Injectable()
 export class ElementoService {
 
   constructor(
     @InjectRepository(ElementoEntity)
-    private elementoRepo: Repository<ElementoEntity>){}
+    private elementoRepo: Repository<ElementoEntity>,
+  
+    @InjectRepository(SituacaoElementoEntity) 
+    private situacaoRepo: Repository<SituacaoElementoEntity>){}
 
-  create(createElementoDto: CreateElementoDto) {
-    return 'This action adds a new elemento';
+  create(createElementoDto: CreateElementoDto): Promise<ElementoEntity> {
+    const elemento = this.elementoRepo.create(createElementoDto);
+    return this.elementoRepo.save(elemento);
   }
 
-  findAll() {
-    return this.elementoRepo.find();
+  findAll(): Promise<ElementoEntity[]> {
+    return this.elementoRepo.find({
+      relations: {
+        tipoElemento: true,
+        situacaoElemento: true,
+        usuarioCriacao: { sujeito: { pessoa: true } },
+        usuarioAlteracao: { sujeito: { pessoa: true } },
+        proximoElemento: true,
+        anotacoes: true,
+        referencias: true
+      }
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} elemento`;
+  async findOne(id: number): Promise<ElementoEntity> {
+    const elemento = await this.elementoRepo.findOne({
+      where: { id },
+      relations: {
+        tipoElemento: true,
+        situacaoElemento: true,
+        usuarioCriacao: { sujeito: { pessoa: true } },
+        usuarioAlteracao: { sujeito: { pessoa: true } },
+        proximoElemento: true,
+        anotacoes: true,
+        referencias: true
+      }
+    });
+
+    if (!elemento) {
+      throw new NotFoundException(`Elemento ${id} não encontrado`);
+    }
+
+    return elemento;
   }
 
-  update(id: number, updateElementoDto: UpdateElementoDto) {
-    return `This action updates a #${id} elemento`;
+  async update(id: number, updateElementoDto: UpdateElementoDto): Promise<ElementoEntity> {
+    const elemento = await this.findOne(id);
+    Object.assign(elemento, updateElementoDto);
+    return this.elementoRepo.save(elemento);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} elemento`;
+  async remove(id: number): Promise<ElementoEntity> {
+    const elemento = await this.findOne(id);
+    // AFAZER: Atualizar anotacao com o idUsuarioExclusao
+    // anotacao.idUsuarioExclusao = idUsuario;
+    return this.elementoRepo.softRemove(elemento);
   }
 }

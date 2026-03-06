@@ -6,39 +6,39 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 export class DbConfigService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
   createTypeOrmOptions(): TypeOrmModuleOptions {
+    const ambiente_producao: boolean = this.configService.get('NODE_ENV') == 'prod';
+
     return {
       type: 'mssql',
-      name: 'default',
       host: this.configService.get<string>('DB_HOST'),
-      port: parseInt(this.configService.get<string>('DB_PORT') as string),
+      port: Number(this.configService.get<number>('DB_PORT')),
       username: this.configService.get<string>('DB_USERNAME'),
       password: this.configService.get<string>('DB_PASSWORD'),
       database: this.configService.get<string>('DB_NAME'),
       options: { encrypt: false },
-      logging: true,
       autoLoadEntities: true,
-      synchronize: true,
+      logging: !ambiente_producao,
+      synchronize: !ambiente_producao,
     };
   }
 }
 
-@Injectable()
-export class DbConfigServiceUsuario implements TypeOrmOptionsFactory {
-  constructor(private configService: ConfigService) {}
-  createTypeOrmOptions(): TypeOrmModuleOptions {
-    return {
-      type: 'mssql',
-      name: 'portal-servidor',
-      host: this.configService.get<string>('DB_PORTAL_HOST'),
-      port: parseInt(this.configService.get<string>('DB_PORTAL_PORT') as string),
-      username: this.configService.get<string>('DB_PORTAL_USERNAME'),
-      password: this.configService.get<string>('DB_PORTAL_PASSWORD'),
-      database: this.configService.get<string>('DB_PORTAL_NAME'),
-      options: { encrypt: false },
-      logging: true,
-      autoLoadEntities: true,
-      synchronize: false,
-    };
-  }
-}
+// @Injectable()
+// export class DbConfigServiceUsuario implements TypeOrmOptionsFactory {
+//   constructor(private configService: ConfigService) {}
+//   createTypeOrmOptions(): TypeOrmModuleOptions {
+//     return {
+//       type: 'mssql',
+//       host: this.configService.get<string>('DB_PORTAL_HOST'),
+//       port: Number(this.configService.get<number>('DB_PORT')),
+//       username: this.configService.get<string>('DB_PORTAL_USERNAME'),
+//       password: this.configService.get<string>('DB_PORTAL_PASSWORD'),
+//       database: this.configService.get<string>('DB_PORTAL_NAME'),
+//       options: { encrypt: false },
+//       logging: true,
+//       autoLoadEntities: true,
+//       synchronize: false,
+//     };
+//   }
+// }
 

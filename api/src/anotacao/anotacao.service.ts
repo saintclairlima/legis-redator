@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAnotacaoDto } from './dto/create-anotacao.dto';
 import { UpdateAnotacaoDto } from './dto/update-anotacao.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AnotacaoEntity } from './entities/anotacao.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AnotacaoService {
-  create(createAnotacaoDto: CreateAnotacaoDto) {
-    return 'This action adds a new anotacao';
+
+  constructor(
+    @InjectRepository(AnotacaoEntity)
+    private anotacaoRepo: Repository<AnotacaoEntity>
+  ) {}
+  
+  create(createAnotacaoDto: CreateAnotacaoDto): Promise<AnotacaoEntity> {
+    const anotacao = this.anotacaoRepo.create(createAnotacaoDto);
+    return this.anotacaoRepo.save(anotacao);
   }
 
-  findAll() {
-    return `This action returns all anotacao`;
+  findAll(): Promise<AnotacaoEntity[]> {
+    return this.anotacaoRepo.find({
+      relations: { elemento: true }
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} anotacao`;
+  async findOne(id: number): Promise<AnotacaoEntity> {
+    const anotacao = await this.anotacaoRepo.findOne({
+      where: { id },
+      relations: { elemento: true }
+    });
+
+    if (!anotacao) {
+      throw new NotFoundException(`Anotação ${id} não encontrada`);
+    }
+    return anotacao;
   }
 
-  update(id: number, updateAnotacaoDto: UpdateAnotacaoDto) {
-    return `This action updates a #${id} anotacao`;
+  async update(id: number, updateAnotacaoDto: UpdateAnotacaoDto): Promise<AnotacaoEntity> {
+    const anotacao = await this.findOne(id);
+    Object.assign(anotacao, updateAnotacaoDto);
+    return this.anotacaoRepo.save(anotacao);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} anotacao`;
+  async remove(id: number) {
+    const anotacao = await this.findOne(id);
+    // AFAZER: Atualizar anotacao com o idUsuarioExclusao
+    // anotacao.idUsuarioExclusao = idUsuario;
+    return this.anotacaoRepo.softRemove(anotacao);
   }
 }

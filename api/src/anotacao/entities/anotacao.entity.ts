@@ -1,8 +1,9 @@
 import { ElementoEntity } from 'src/elemento/entities/elemento.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity({ name: 'Anotacao', schema: 'dbo' })
-export class AnotacaoEntity {
+export class AnotacaoEntity  extends EntidadeBaseAuditavel {
     @PrimaryGeneratedColumn({ name: 'idAnotacao', primaryKeyConstraintName: 'Anotacao_PK' })
     id: number;
 
@@ -11,18 +12,6 @@ export class AnotacaoEntity {
 
     @Column({ nullable: true })
     idAnotacaoSeguinte: number;
-
-    @Column()
-    idUsuarioCriacao: number;
-
-    @CreateDateColumn({ type: 'datetime2' })
-    dataCriacao: Date;
-
-    @Column({ nullable: true })
-    idUsuarioAlteracao?: number;
-
-    @UpdateDateColumn({ type: 'datetime2', nullable: true })
-    dataUltimaAlteracao?: Date;
 
     @ManyToOne(() => ElementoEntity, elemento => elemento.anotacoes)
     @JoinColumn({ name: 'idElemento', foreignKeyConstraintName: 'Anotacao_Elemento_FK' })

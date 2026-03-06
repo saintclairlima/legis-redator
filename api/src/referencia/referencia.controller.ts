@@ -22,6 +22,11 @@ export class ReferenciaController {
     return this.referenciaService.findOne(+id);
   }
 
+  @Get(':id/children')
+  findOneChildren(@Param('id') id: string) {
+    return this.referenciaService.findOneComElementos(+id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateReferenciaDto: UpdateReferenciaDto) {
     return this.referenciaService.update(+id, updateReferenciaDto);

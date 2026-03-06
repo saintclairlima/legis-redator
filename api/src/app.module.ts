@@ -10,24 +10,25 @@ import { ReferenciaModule } from './referencia/referencia.module';
 import { AnotacaoModule } from './anotacao/anotacao.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { DbConfigService, DbConfigServiceUsuario } from './api-config/database.config.service';
+import { DbConfigService } from './api-config/database.config.service';
 import { UsuarioModule } from './usuario/usuario.module';
+import { EntidadeBaseModule } from './entidade-base/entidade-base.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    TypeOrmModule.forRootAsync({
-      name: 'default',
-      useClass: DbConfigService,
-    }),
-    DocumentoModule, ElementoModule, SituacaoDocumentoModule, SituacaoElementoModule, TipoElementoModule, ReferenciaModule, AnotacaoModule, UsuarioModule],
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({ useClass: DbConfigService }),
+    DocumentoModule,
+    ElementoModule,
+    SituacaoDocumentoModule,
+    SituacaoElementoModule,
+    TipoElementoModule,
+    ReferenciaModule,
+    AnotacaoModule,
+    UsuarioModule,
+    EntidadeBaseModule],
   controllers: [AppController],
-  providers: [
-    AppService,
-    DbConfigService,
-    DbConfigServiceUsuario,
-  ],
+  providers: [AppService],
 })
+
 export class AppModule {}

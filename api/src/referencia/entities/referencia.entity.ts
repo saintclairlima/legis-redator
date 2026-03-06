@@ -1,8 +1,9 @@
 import { ElementoEntity } from 'src/elemento/entities/elemento.entity';
+import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'Referencia', schema: 'dbo' })
-export class ReferenciaEntity {
+export class ReferenciaEntity extends EntidadeBaseAuditavel {
     @PrimaryGeneratedColumn({ name: 'idReferencia', primaryKeyConstraintName: 'Referencia_PK' })
     id: number;
 

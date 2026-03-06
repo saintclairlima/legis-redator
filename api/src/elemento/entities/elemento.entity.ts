@@ -2,11 +2,12 @@ import { DocumentoEntity } from 'src/documento/entities/documento.entity';
 import { SituacaoElementoEntity } from 'src/situacao-elemento/entities/situacao-elemento.entity';
 import { TipoElementoEntity } from 'src/tipo-elemento/entities/tipo-elemento.entity';
 import { AnotacaoEntity } from 'src/anotacao/entities/anotacao.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne, OneToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne, OneToOne, ManyToMany, JoinTable } from 'typeorm';
 import { ReferenciaEntity } from 'src/referencia/entities/referencia.entity';
+import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
 
 @Entity({ name: 'Elemento', schema: 'dbo' })
-export class ElementoEntity {
+export class ElementoEntity extends EntidadeBaseAuditavel{
     @PrimaryGeneratedColumn({ name: 'idElemento', primaryKeyConstraintName: 'Elemento_PK' })
     id: number;
 
@@ -44,24 +45,12 @@ export class ElementoEntity {
     @JoinColumn({ name: 'idElementoSeguinte', foreignKeyConstraintName: 'FK_Elemento_Seguinte_Unique' })
     proximoElemento?: ElementoEntity;
 
-    @Column()
+    @Column({ select: false})
     idSituacaoElemento: number;
 
     @ManyToOne(() => SituacaoElementoEntity)
     @JoinColumn({ name: 'idSituacaoElemento', foreignKeyConstraintName: 'Elemento_SituacaoElemento_FK' })
     situacaoElemento: SituacaoElementoEntity;
-
-    @Column({ select: false })
-    idUsuarioCriacao: number;
-
-    @CreateDateColumn ({ type: 'datetime2' })
-    dataCriacao: Date;
-
-    @Column({ nullable: true })
-    idUsuarioAlteracao?: number;
-
-    @UpdateDateColumn ({ type: 'datetime2', nullable: true })
-    dataUltimaAlteracao: Date;
     
     @OneToMany(() => AnotacaoEntity, anotacao => anotacao.elemento)
     anotacoes: AnotacaoEntity[];
