@@ -3,35 +3,35 @@ import { PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 
 @PortalEntity('pessoa')
 export class PessoaEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    nome: string;
+  @Column()
+  nome: string;
 }
 
 @PortalEntity('sujeito')
 export class SujeitoEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    pessoa_id: number;
+  @Column()
+  pessoa_id: number;
 
-    @OneToOne(() => PessoaEntity)
-    @JoinColumn({ name: 'pessoa_id' })
-    pessoa: PessoaEntity;
+  @OneToOne(() => PessoaEntity)
+  @JoinColumn({ name: 'pessoa_id' })
+  pessoa: PessoaEntity;
 }
 
 @PortalEntity('usuario')
 export class UsuarioEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    sujeito_id: number;
-    
-    @OneToOne(() => SujeitoEntity)
-    @JoinColumn({ name: 'sujeito_id' })
-    sujeito: SujeitoEntity;
+  @Column()
+  sujeito_id: number;
+  
+  @OneToOne(() => SujeitoEntity)
+  @JoinColumn({ name: 'sujeito_id' })
+  sujeito: SujeitoEntity;
 }
