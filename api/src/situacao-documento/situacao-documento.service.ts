@@ -1,26 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSituacaoDocumentoDto } from './dto/create-situacao-documento.dto';
-import { UpdateSituacaoDocumentoDto } from './dto/update-situacao-documento.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { SituacaoDocumentoEntity } from './entities/situacao-documento.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class SituacaoDocumentoService {
-  create(createSituacaoDocumentoDto: CreateSituacaoDocumentoDto) {
-    return 'This action adds a new situacaoDocumento';
+
+  constructor(
+    @InjectRepository(SituacaoDocumentoEntity)
+    private situacaoDocumentoRepo: Repository<SituacaoDocumentoEntity>
+  ) {}
+
+  findAll(): Promise<SituacaoDocumentoEntity[]> {
+    return this.situacaoDocumentoRepo.find();
   }
 
-  findAll() {
-    return `This action returns all situacaoDocumento`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} situacaoDocumento`;
-  }
-
-  update(id: number, updateSituacaoDocumentoDto: UpdateSituacaoDocumentoDto) {
-    return `This action updates a #${id} situacaoDocumento`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} situacaoDocumento`;
+  async findOne(id: number): Promise<SituacaoDocumentoEntity> {
+    try {
+      return await  this.situacaoDocumentoRepo.findOneOrFail({
+        where: { id }
+      });
+    } catch {
+      throw new NotFoundException(`Situação de Documento ${id} não encontrada`);
+    }
   }
 }

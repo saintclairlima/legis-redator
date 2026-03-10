@@ -1,26 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSituacaoElementoDto } from './dto/create-situacao-elemento.dto';
-import { UpdateSituacaoElementoDto } from './dto/update-situacao-elemento.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { SituacaoElementoEntity } from './entities/situacao-elemento.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class SituacaoElementoService {
-  create(createSituacaoElementoDto: CreateSituacaoElementoDto) {
-    return 'This action adds a new situacaoElemento';
+
+  constructor(
+    @InjectRepository(SituacaoElementoEntity)
+    private situacaoElementoRepo: Repository<SituacaoElementoEntity>
+  ) {}
+
+  findAll(): Promise<SituacaoElementoEntity[]> {
+    return this.situacaoElementoRepo.find();
   }
 
-  findAll() {
-    return `This action returns all situacaoElemento`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} situacaoElemento`;
-  }
-
-  update(id: number, updateSituacaoElementoDto: UpdateSituacaoElementoDto) {
-    return `This action updates a #${id} situacaoElemento`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} situacaoElemento`;
+  async findOne(id: number): Promise<SituacaoElementoEntity> {
+    try {
+      return await  this.situacaoElementoRepo.findOneOrFail({
+        where: { id }
+      });
+    } catch {
+      throw new NotFoundException(`Situação de Elemento ${id} não encontrada`);
+    }
   }
 }

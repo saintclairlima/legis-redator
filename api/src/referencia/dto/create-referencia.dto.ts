@@ -13,6 +13,10 @@ export class CreateReferenciaDto {
   @IsNotEmpty({ message: 'Os metadados são obrigatórios (podem ser um JSON stringificado)' })
   metadados: string;
 
+  @IsNumber()
+  @IsNotEmpty({ message: 'O idUsuarioCriacao é obrigatório' })
+  idUsuarioCriacao: number;
+
   @IsArray()
   @IsNumber({}, { each: true })
   @IsOptional()

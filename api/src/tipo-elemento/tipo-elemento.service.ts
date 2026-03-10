@@ -1,26 +1,28 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTipoElementoDto } from './dto/create-tipo-elemento.dto';
-import { UpdateTipoElementoDto } from './dto/update-tipo-elemento.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { TipoElementoEntity } from './entities/tipo-elemento.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class TipoElementoService {
-  create(createTipoElementoDto: CreateTipoElementoDto) {
-    return 'This action adds a new tipoElemento';
-  }
 
-  findAll() {
-    return `This action returns all tipoElemento`;
-  }
+  constructor(
+    @InjectRepository(TipoElementoEntity)
+    private tipoElementoRepo: Repository<TipoElementoEntity>
+  ) {}
 
-  findOne(id: number) {
-    return `This action returns a #${id} tipoElemento`;
+  findAll(): Promise<TipoElementoEntity[]> {
+    return this.tipoElementoRepo.find();
   }
+  
 
-  update(id: number, updateTipoElementoDto: UpdateTipoElementoDto) {
-    return `This action updates a #${id} tipoElemento`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} tipoElemento`;
+  async findOne(id: number): Promise<TipoElementoEntity> {
+    try {
+      return this.tipoElementoRepo.findOneOrFail({
+        where: { id }
+      });
+    } catch {
+      throw new NotFoundException(`Situação de Documento ${id} não encontrada`);
+    }
   }
 }

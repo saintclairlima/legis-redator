@@ -25,15 +25,14 @@ export class AnotacaoService {
   }
 
   async findOne(id: number): Promise<AnotacaoEntity> {
-    const anotacao = await this.anotacaoRepo.findOne({
-      where: { id },
-      relations: { elemento: true }
-    });
-
-    if (!anotacao) {
+    try {
+      return await this.anotacaoRepo.findOneOrFail({
+        where: { id },
+        relations: { elemento: true }
+      });
+    } catch {
       throw new NotFoundException(`Anotação ${id} não encontrada`);
     }
-    return anotacao;
   }
 
   async update(id: number, updateAnotacaoDto: UpdateAnotacaoDto): Promise<AnotacaoEntity> {
@@ -42,10 +41,10 @@ export class AnotacaoService {
     return this.anotacaoRepo.save(anotacao);
   }
 
-  async remove(id: number) {
-    const anotacao = await this.findOne(id);
-    // AFAZER: Atualizar anotacao com o idUsuarioExclusao
-    // anotacao.idUsuarioExclusao = idUsuario;
+  async remove(idAnotacao: number, idUsuario: number): Promise<AnotacaoEntity> {
+    const anotacao = await this.findOne(idAnotacao);
+    anotacao.idUsuarioExclusao = idUsuario;
+    await this.anotacaoRepo.save(anotacao);
     return this.anotacaoRepo.softRemove(anotacao);
   }
 }

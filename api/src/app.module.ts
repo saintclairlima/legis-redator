@@ -13,6 +13,10 @@ import { ConfigModule } from '@nestjs/config';
 import { DbConfigService } from './api-config/database.config.service';
 import { UsuarioModule } from './usuario/usuario.module';
 import { EntidadeBaseModule } from './entidade-base/entidade-base.module';
+import { AutenticacaoModule } from './autenticacao/autenticacao.module';
+
+import { APP_GUARD } from '@nestjs/core';
+import { AutenticacaoGuard } from './autenticacao/autenticacao.guard';
 
 @Module({
   imports: [
@@ -26,9 +30,16 @@ import { EntidadeBaseModule } from './entidade-base/entidade-base.module';
     ReferenciaModule,
     AnotacaoModule,
     UsuarioModule,
-    EntidadeBaseModule],
+    EntidadeBaseModule,
+    AutenticacaoModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AutenticacaoGuard,
+    }
+  ],
 })
 
 export class AppModule {}

@@ -3,18 +3,14 @@ import { CreateDocumentoDto } from './dto/create-documento.dto';
 import { UpdateDocumentoDto } from './dto/update-documento.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DocumentoEntity } from './entities/documento.entity';
-import { Repository, UpdateResult } from 'typeorm';
-import { RotuloSituacaoDocumento, SituacaoDocumentoEntity } from 'src/situacao-documento/entities/situacao-documento.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class DocumentoService {
   
   constructor(
     @InjectRepository(DocumentoEntity)
-    private documentoRepo: Repository<DocumentoEntity>,
-  
-    @InjectRepository(SituacaoDocumentoEntity) 
-    private situacaoRepo: Repository<SituacaoDocumentoEntity>){}
+    private documentoRepo: Repository<DocumentoEntity>){}
 
   create(createDocumentoDto: CreateDocumentoDto): Promise<DocumentoEntity> {
     const documento = this.documentoRepo.create(createDocumentoDto);
@@ -24,28 +20,28 @@ export class DocumentoService {
   findAll(): Promise<DocumentoEntity[]> {
     return this.documentoRepo.find({
       relations: {
-        usuarioCriacao: { sujeito: {pessoa: true} },
-        usuarioAlteracao: { sujeito: {pessoa: true} },
+        usuarioCriacao: { pessoa: true},
+        usuarioAlteracao: { pessoa: true },
         situacao: true,
         elementos: true
       }
     });
   }
 
-  findOne(id: number): Promise<DocumentoEntity> {
-    const documento = this.documentoRepo.findOneOrFail({
-      where: { id },
-      relations: {
-        usuarioCriacao: { sujeito: {pessoa: true} },
-        usuarioAlteracao: { sujeito: {pessoa: true} },
-        situacao: true,
-        elementos: true
-      }
-    });
-    if (!documento) {
-      throw new NotFoundException(`Elemento ${id} não encontrado`);
+  async findOne(id: number): Promise<DocumentoEntity> {
+    try {
+      return await this.documentoRepo.findOneOrFail({
+        where: { id },
+        relations: {
+          usuarioCriacao: { pessoa: true },
+          usuarioAlteracao: { pessoa: true },
+          situacao: true,
+          elementos: true
+        }
+      });
+    } catch {
+      throw new NotFoundException(`Documento ${id} não encontrado`);
     }
-    return documento;
   }
 
   async update(id: number, updateDocumentoDto: UpdateDocumentoDto): Promise<DocumentoEntity> {
@@ -54,10 +50,10 @@ export class DocumentoService {
     return this.documentoRepo.save(documento);
   }
 
-  async remove(id: number): Promise<DocumentoEntity> {
+  async remove(id: number, idUsuario: number): Promise<DocumentoEntity> {  
     const documento = await this.findOne(id);
-    // AFAZER: Atualizar anotacao com o idUsuarioExclusao
-    // documento.idUsuarioExclusao = idUsuario;
+    documento.idUsuarioExclusao = idUsuario;
+    await this.documentoRepo.save(documento);
     return this.documentoRepo.softRemove(documento);
   }
 }

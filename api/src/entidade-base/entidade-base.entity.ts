@@ -3,7 +3,7 @@ import { CreateDateColumn, Column, ManyToOne, JoinColumn, UpdateDateColumn, Dele
 
 export abstract class EntidadeBaseAuditavel {
 
-  @CreateDateColumn({ type: 'datetime2' })
+  @CreateDateColumn({ type: 'datetime2', select: false })
   dataCriacao: Date;
 
   @Column({ select: false })
@@ -13,7 +13,7 @@ export abstract class EntidadeBaseAuditavel {
   @JoinColumn({ name: 'idUsuarioCriacao' })
   usuarioCriacao: UsuarioEntity;
 
-  @UpdateDateColumn({ type: 'datetime2', nullable: true })
+  @UpdateDateColumn({ type: 'datetime2', nullable: true, select: false })
   dataUltimaAlteracao?: Date;
 
   @Column({ nullable: true, select: false })
@@ -23,7 +23,7 @@ export abstract class EntidadeBaseAuditavel {
   @JoinColumn({ name: 'idUsuarioAlteracao' })
   usuarioAlteracao?: UsuarioEntity;
 
-  @DeleteDateColumn({ type: 'datetime2', nullable: true})
+  @DeleteDateColumn({ type: 'datetime2', nullable: true, select: false })
   dataExclusao?: Date;
 
   @Column({ nullable: true, select: false })

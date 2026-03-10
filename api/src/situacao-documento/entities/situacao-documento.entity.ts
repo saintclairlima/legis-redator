@@ -7,7 +7,6 @@ export enum RotuloSituacaoDocumento {
   Concluido = 'Concluído',
   Arquivado = 'Arquivado',
   Excluido = 'Excluído'
-  
 }
 
 @Entity({ name: 'SituacaoDocumento', schema: 'dbo' })

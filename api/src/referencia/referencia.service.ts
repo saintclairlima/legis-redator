@@ -23,26 +23,24 @@ export class ReferenciaService {
   }
 
   async findOne(id: number): Promise<ReferenciaEntity> {
-    const referencia = await this.referenciaRepo.findOne({
-      where: { id }
-    });
-
-    if (!referencia) {
+    try {
+      return await this.referenciaRepo.findOneOrFail({
+        where: { id }
+      });
+    } catch {
       throw new NotFoundException(`Referência ${id} não encontrada`);
     }
-    return referencia;
   }
 
   async findOneComElementos(id: number): Promise<ReferenciaEntity> {
-    const referencia = await  this.referenciaRepo.findOne({
-      where: { id }, 
-      relations: { elementos: true }
-    });
-
-    if (!referencia) {
+    try {
+      return await this.referenciaRepo.findOneOrFail({
+        where: { id },
+        relations: { elementos: true }
+      });
+    } catch {
       throw new NotFoundException(`Referência ${id} não encontrada`);
     }
-    return referencia;
   }
 
   async update(id: number, updateReferenciaDto: UpdateReferenciaDto): Promise<ReferenciaEntity> {
@@ -51,10 +49,10 @@ export class ReferenciaService {
     return this.referenciaRepo.save(referencia);
   }
 
-  async remove(id: number) {
-    const anotacao = await this.findOne(id);
-    // AFAZER: Atualizar anotacao com o idUsuarioExclusao
-    // anotacao.idUsuarioExclusao = idUsuario;
+  async remove(idAnotacao: number, idUsuario: number) {
+    const anotacao = await this.findOne(idAnotacao);
+    anotacao.idUsuarioExclusao = idUsuario;
+    await this.referenciaRepo.save(anotacao);
     return this.referenciaRepo.softRemove(anotacao);
   }
 }
