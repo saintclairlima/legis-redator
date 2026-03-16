@@ -6,8 +6,7 @@ export enum RotuloSituacaoElemento {
   Bloqueado = 'Bloqueado',
   Edicao = 'Edição',
   Concluido = 'Concluído',
-  Arquivado = 'Arquivado',
-  Excluido = 'Excluído'
+  Arquivado = 'Arquivado'
 }
 
 @Entity({ name: 'SituacaoElemento', schema: 'dbo' })
