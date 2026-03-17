@@ -6,7 +6,7 @@
 :root{
     --mat-toolbar-container-background-color: #3f5463;
     --mat-toolbar-container-text-color: white;
-    --mat-form-field-outlined-container-shape: outlined;
+    --mat-form-field-outlined-container-shape: 4px;
 }
 
 body {

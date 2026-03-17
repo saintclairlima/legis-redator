@@ -16,10 +16,6 @@ $theme: mat.define-theme((
     brand-family: 'Roboto',
     plain-family: 'Roboto',
   ),
-  // Aqui você força o arredondamento que estava faltando
-  shape: (
-    container-shape: 8px
-  )
 ));
 
 html {
