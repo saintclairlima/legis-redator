@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+
+
+:root{
+    --mat-toolbar-container-background-color: #3f5463;
+    --mat-toolbar-container-text-color: white;
+    --mat-form-field-outlined-container-shape: outlined;
+}
+
+body {
+    background-color: #f5f5f5;
+}
