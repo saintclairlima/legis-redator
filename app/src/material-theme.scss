@@ -9,14 +9,26 @@
 $theme: mat.define-theme((
   color: (
     theme-type: light,
-    primary: mat.$magenta-palette,
-    tertiary: mat.$violet-palette,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
   ),
   typography: (
     brand-family: 'Roboto',
     plain-family: 'Roboto',
   ),
 ));
+
+:root {
+  @include mat.toolbar-overrides((
+    container-background-color: #3f5463,
+    container-text-color: white,
+  ));
+
+  @include mat.button-overrides((
+    filled-container-color: #3f5463,
+    tonal-container-color: gray
+  ));
+}
 
 html {
   height: 100%;
@@ -33,7 +45,8 @@ body {
   // Set a default background, font and text colors for the application using
   // Angular Material's system-level CSS variables. Learn more about these
   // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
+  background-color: #f5f5f5;
+  // background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
 

@@ -1,0 +1,13 @@
+
+<div [class]="{'caixa': true, 'exibir': exibirMensagem(), 'info': true, 'rounded-sm': true}">
+    @if(titulo()) {
+        <div class="p-3">
+            <span>{{ titulo() }}</span>
+        </div>
+    }
+    <div [class]="{'p-3': true, 'text-sm': true}">
+        @for(paragrafo of conteudo(); track $index){
+            <div><p>{{ paragrafo }}</p></div>
+        }
+    </div>
+</div>

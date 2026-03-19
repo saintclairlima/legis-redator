@@ -1,0 +1,11 @@
+:root{
+  --cor-texto-info: #084298;
+  --cor-texto-aviso: #664d03;
+  --cor-texto-erro: #842029;
+  --cor-fundo-info: #cfe2ff;
+  --cor-fundo-aviso: #fff3cd;
+  --cor-fundo-erro: #f8d7da;
+  --borda-info: #b6d4fe;
+  --borda-aviso: #ffecb5;
+  --borda-erro: #f5c2c7;
+}

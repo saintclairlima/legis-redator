@@ -1,0 +1,29 @@
+.caixa {
+    max-height: 0px;
+    overflow:hidden;
+    transition: max-height 0.5s ease-in-out;
+}
+
+.caixa.exibir {
+    /* display: inline-block; */
+    height: auto;
+    max-height: 500px;
+}
+
+.info {
+    color: var(--cor-texto-info);
+    background-color: var(--cor-fundo-info);
+    border-color: var(--borda-info);
+}
+
+.aviso {
+    color: var(--cor-texto-aviso);
+    background-color: var(--cor-fundo-aviso);
+    border-color: var(--borda-aviso);
+}
+
+.erro {
+    color: var(--cor-texto-erro);
+    background-color: var(--cor-fundo-erro);
+    border-color: var(--borda-erro);
+}
