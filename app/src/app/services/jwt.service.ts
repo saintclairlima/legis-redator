@@ -5,20 +5,24 @@ import { jwtDecode } from 'jwt-decode';
 export class JwtService {
   constructor() {}
 
+  apagarToken() {
+    sessionStorage.removeItem('token-jwt-legis-redator');
+  }
+
   decodificatJWT(token: string): any {
     this.salvarToken(token);
     return jwtDecode(token);
   }
 
-  salvarToken(token: string): void {
-    sessionStorage.setItem('token-jwt-legis-redator', token);
+  possuiToken() {
+    return !!sessionStorage.getItem('token-jwt-legis-redator');;
   }
 
   recuperarToken(): string | null {
     return sessionStorage.getItem('token-jwt-legis-redator');
   }
 
-  apagarToken() {
-    sessionStorage.removeItem('token-jwt-legis-redator');
+  salvarToken(token: string): void {
+    sessionStorage.setItem('token-jwt-legis-redator', token);
   }
 }

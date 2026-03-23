@@ -15,6 +15,11 @@ export class SessaoService {
     this.usuarioLogado = this.jwtService.decodificatJWT(token) as Usuario;
   }
 
+  encerrarSessao() {
+    this.jwtService.apagarToken();
+    this.usuarioLogado = null;
+  }
+
   getUsuarioLogado() {
     return this.usuarioLogado;
   }

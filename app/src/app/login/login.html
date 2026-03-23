@@ -16,11 +16,11 @@
 
     <div class="mt-10 bg-white rounded-sm drop-shadow-sm p-7 caixa-login">
       <div class="flex justify-center text-2xl">ENTRAR</div>
-      <form [formGroup]="form" class="flex flex-col gap-5 pt-5">
+      <form [formGroup]="form" (ngSubmit)="fazerLogin()" class="flex flex-col gap-5 pt-5">
         <mat-form-field appearance="outline">
           <mat-label>CPF</mat-label>
           <input type="text" matInput formControlName="cpf">
-          @if (form.get('cpf')!.hasError('required') || form.get('cpf')!.hasError('cpfInvalido')) {
+          @if (form.controls.cpf.hasError('required') || form.controls.cpf.hasError('cpfInvalido')) {
             <mat-error><span class="text-sm text-red-600">Por favor, digite um CPF válido</span></mat-error>
           }
         </mat-form-field>
@@ -30,7 +30,7 @@
           <input type="password" matInput formControlName="senha">
         </mat-form-field>
 
-        <button matButton="filled">Entrar</button>
+        <button matButton="filled" type="submit" (click)="fazerLogin()">Entrar</button>
       </form>
 
       <div class="flex justify-center pt-5 mb-5">

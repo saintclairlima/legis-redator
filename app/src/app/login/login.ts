@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -17,24 +17,15 @@ import { Router } from '@angular/router';
   styleUrl: './login.css',
 })
 export class Login {
-  form: FormGroup;
-
-  constructor(
-    private autenticacaoService: AutenticacaoService,
-    private fb: FormBuilder,
-    private router: Router
-  ){
-
-    // this.form = this.fb.nonNullable.group({
-    //   cpf: ['', [Validators.required, cpfValidator]],
-    //   senha: ['', [Validators.required]]
-    // });
-
-    this.form = new FormGroup({
+    form = new FormGroup({
       cpf: new FormControl('', {validators: [Validators.required, cpfValidator], nonNullable: true}),
       senha: new FormControl('', {validators: [Validators.required], nonNullable: true}),
     });
-  }
+
+  constructor(
+    private autenticacaoService: AutenticacaoService,
+    private router: Router
+  ){ }
 
   exibirMensagemEsqueceuSenha = signal<boolean>(false);
 
@@ -44,15 +35,16 @@ export class Login {
 
   fazerLogin() {
     if (this.form.valid) {
-      const cpf = this.form.get('cpf')!.value;
-      const senha = this.form.get('senha')!.value;
+      const cpf = this.form.controls.cpf.value;
+      const senha = this.form.controls.senha.value;
       this.autenticacaoService.login(cpf, senha)
       .subscribe({
         next: (res) => {
-          console.log(res)
           this.router.navigate(['inicio']);
         },
-        error: (erro) => {}
+        error: (erro) => {
+          console.error('Ocorreu um erro ao fazer login.', erro)
+        }
       });
     }
   }
