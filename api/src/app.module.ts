@@ -17,6 +17,7 @@ import { AutenticacaoModule } from './autenticacao/autenticacao.module';
 
 import { APP_GUARD } from '@nestjs/core';
 import { AutenticacaoGuard } from './autenticacao/autenticacao.guard';
+import { PermissaoDocumentoModule } from './permissao-documento/permissao-documento.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { AutenticacaoGuard } from './autenticacao/autenticacao.guard';
     AnotacaoModule,
     UsuarioModule,
     EntidadeBaseModule,
-    AutenticacaoModule],
+    AutenticacaoModule,
+    PermissaoDocumentoModule],
   controllers: [AppController],
   providers: [
     AppService,

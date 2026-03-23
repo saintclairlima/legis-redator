@@ -23,7 +23,8 @@ export class DocumentoService {
         usuarioCriacao: { pessoa: true},
         usuarioAlteracao: { pessoa: true },
         situacao: true,
-        elementos: true
+        elementos: true,
+        permissoes:  true
       }
     });
   }

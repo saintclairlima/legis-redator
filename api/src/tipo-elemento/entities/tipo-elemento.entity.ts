@@ -2,6 +2,9 @@ import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 enum RotuloTipoElemento {
+  Epigrafe = 'Epígrafe',
+  Ementa = 'Ementa',
+  Preambulo = 'Preâmbulo',
   Parte = 'Parte',
   Livro = 'Livro',
   Titulo = 'Título',
