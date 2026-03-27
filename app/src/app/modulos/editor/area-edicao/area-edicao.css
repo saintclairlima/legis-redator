@@ -1,0 +1,66 @@
+:host { display: block; }
+  
+.block-content:empty:before {
+  content: attr(data-placeholder);
+  color: #acaba9;
+  pointer-events: none;
+  display: block;
+}
+
+.dragging {
+  opacity: 0.4;
+  background: #f7f7f5;
+}
+
+.drag-over {
+  border-top: 2px solid #2eaadc;
+}
+
+.list-item {
+  display: list-item;
+  list-style-type: disc;
+}
+
+.botoes-bloco__icone {
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  color: #acaba9;
+}
+
+.botoes-bloco__icone:hover {
+  background-color: #efefef;
+}
+
+.botoes-bloco__drag {
+  cursor: grab;
+}
+
+.botoes-bloco__drag:active {
+  cursor: grabbing;
+}
+
+.botoes-bloco__add {
+  cursor: pointer;
+}
+
+.fonte-padrao {
+  font-size: 12pt;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #2c2c2c;
+}
+
+.folha {
+  background-color: #ffffff;
+  height: 100vh;
+  width: 210mm;
+  padding-top: 20mm;
+  padding-right: 20mm;
+}
+
+.folha::selection {
+  background-color: rgba(46, 170, 220, 0.3);
+}
+
+.folha *::selection {
+  background-color: rgba(46, 170, 220, 0.3);
+}

@@ -4,11 +4,6 @@ import { PermissaoDocumentoEntity } from 'src/permissao-documento/entities/permi
 import { SituacaoDocumentoEntity } from 'src/situacao-documento/entities/situacao-documento.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 
-export enum VisibilidadeDocumento {
-  Privado = 'Privado',
-  Publico = 'Publico'
-}
-
 @Entity({ name: 'Documento', schema: 'dbo' })
 export class DocumentoEntity extends EntidadeBaseAuditavel {
   @PrimaryGeneratedColumn({ name: 'idDocumento', primaryKeyConstraintName: 'Documento_PK' })
@@ -28,9 +23,6 @@ export class DocumentoEntity extends EntidadeBaseAuditavel {
 
   @Column({ select: false })
   idSituacaoDocumento: number;
-
-  @Column({ type: 'nvarchar', length: 20, default: VisibilidadeDocumento.Privado })
-  visibilidade: VisibilidadeDocumento;
 
   @ManyToOne(() => SituacaoDocumentoEntity, situacaoDocumento => situacaoDocumento.id)
   @JoinColumn({ name: 'idSituacaoDocumento', foreignKeyConstraintName: 'Documento_SituacaoDocumento_FK' })

@@ -4,8 +4,9 @@ import { UsuarioEntity } from "src/usuario/entities/usuario.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export enum TipoPermissao {
-  Leitura = 1,
-  Edicao = 2
+  Leitor = 'Leitor',
+  Editor = 'Editor',
+  Administrador = 'Administrador'
 }
 
 @Entity({ name: 'PermissaoDocumento', schema: 'dbo' })
@@ -27,6 +28,6 @@ export class PermissaoDocumentoEntity extends EntidadeBaseAuditavel {
   @JoinColumn({ name: 'idUsuario' })
   usuario: UsuarioEntity;
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'nvarchar', enum:TipoPermissao, length: 20 })
   permissao: TipoPermissao;
 }

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-inicio',
@@ -6,4 +7,18 @@ import { Component } from '@angular/core';
   templateUrl: './inicio.html',
   styleUrl: './inicio.css',
 })
-export class Inicio {}
+export class Inicio implements OnInit {
+  constructor (private apiService: ApiService) {}
+
+  ngOnInit(): void {
+    this.apiService.getMany('documento')
+    .subscribe({
+      next: (res) => {
+        console.log(res);
+      },
+      error: (erro) => {
+        console.error(erro);
+      }
+    })
+  }
+}

@@ -1,0 +1,24 @@
+<!-- Backdrop transparente para fechar ao clicar fora -->
+<div class="overlay-menu fixed inset-0" (click)="fechar.emit()"></div>
+
+<div
+  class="caixa-menu bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col">
+  <div class="px-3 py-1 mb-1 text-xs text-gray-400 font-semibold uppercase tracking-wider">Tipos de Elementos</div>
+
+  <button class="opcao-menu-editor"
+    (click)="selecionarTipo('paragraph')">
+    <mat-icon class="scale-75 text-gray-500">notes</mat-icon> Texto
+  </button>
+  <button class="opcao-menu-editor"
+    (click)="selecionarTipo('h1')">
+    <mat-icon class="scale-75 text-gray-500">title</mat-icon> Título 1
+  </button>
+  <button class="opcao-menu-editor"
+    (click)="selecionarTipo('h2')">
+    <mat-icon class="scale-75 text-gray-500">title</mat-icon> Título 2
+  </button>
+  <button class="opcao-menu-editor"
+    (click)="selecionarTipo('list-item')">
+    <mat-icon class="scale-75 text-gray-500">format_list_bulleted</mat-icon> Lista
+  </button>
+</div>

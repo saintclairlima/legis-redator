@@ -1,0 +1,30 @@
+<!-- Backdrop transparente para fechar ao clicar fora -->
+<div class="overlay-menu fixed inset-0" (click)="fechar.emit()"></div>
+
+<div class="relative flex">
+  <div class="caixa-menu bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col">
+    <button class="opcao-menu-editor" (click)="toggleSubmenuTiposAberto()">
+      <mat-icon class="scale-75 text-gray-500">notes</mat-icon> Alterar Tipo
+    </button>
+    <button class="opcao-menu-editor">
+      <mat-icon class="scale-75 text-gray-500">title</mat-icon> Adicionar Anotação
+    </button>
+    <button class="opcao-menu-editor">
+      <mat-icon class="scale-75 text-gray-500">title</mat-icon> Gerar Referências
+    </button>
+    <button class="opcao-menu-editor">
+      <!-- AFAZER: procurar nome melhor -->
+      <mat-icon class="scale-75 text-gray-500">format_list_bulleted</mat-icon> Checar Violações
+    </button>
+    <button class="opcao-menu-editor">
+      <mat-icon class="scale-75 text-gray-500">delete</mat-icon> Remover
+    </button>
+
+  </div>
+      <!-- AFAZER: definir melhor a forma de controle de largura do submenu -->
+    @if(submenuTiposAberto()) {
+      <div class="relative">
+        <app-menu-tipos (fechar)="toggleSubmenuTiposAberto()" (tipoSelecionado)="retornarTipoSelecionado($event)"/>
+      </div>
+    }
+</div>
