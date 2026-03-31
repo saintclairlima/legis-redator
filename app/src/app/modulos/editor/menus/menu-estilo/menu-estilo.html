@@ -1,0 +1,11 @@
+<div class="absolute z-50 transform -translate-x-1/2 -translate-y-full flex items-center bg-white border border-gray-200 rounded-md shadow-lg px-1 py-1 gap-1">
+  <button class="botao-estilo" (mousedown)="emitirAcao($event, 'b')" title="Negrito">
+    <mat-icon class="scale-75">format_bold</mat-icon>
+  </button>
+  <button class="botao-estilo" (mousedown)="emitirAcao($event, 'i')" title="Itálico">
+    <mat-icon class="scale-75">format_italic</mat-icon>
+  </button>
+  <button class="botao-estilo" (mousedown)="emitirAcao($event, 'u')" title="Sublinhado">
+    <mat-icon class="scale-75">format_underlined</mat-icon>
+  </button>
+</div>

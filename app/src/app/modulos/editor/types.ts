@@ -8,4 +8,4 @@ export type AcaoOpcaoMenu =
   | { tipo: 'violacoes'; valor: null }
   | { tipo: 'remover'; valor: null };
 
-export type TipoMenu = 'tipos' | 'acoes' | 'estilizacao' | null;
+export type TipoMenu = 'tipos' | 'acoes' | 'estilo' | null;

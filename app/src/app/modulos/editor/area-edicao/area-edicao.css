@@ -1,6 +1,6 @@
 :host { display: block; }
   
-.block-content:empty:before {
+.bloco-edicao:empty:before {
   content: attr(data-placeholder);
   color: #acaba9;
   pointer-events: none;

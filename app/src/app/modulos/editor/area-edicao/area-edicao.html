@@ -24,11 +24,12 @@
 
         <!-- Conteúdo Editável -->
         <div #elementoEditavel
-          class="fonte-padrao block-content flex-1 py-[3px] px-[2px] outline-none min-h-[1.5em] leading-[1.5] break-words whitespace-pre-wrap transition-colors duration-200"
+          class="fonte-padrao bloco-edicao flex-1 py-[3px] px-[2px] outline-none min-h-[1.5em] leading-[1.5] break-words whitespace-pre-wrap transition-colors duration-200"
           [class.text-3xl]="bloco.tipo === 'h1'" [class.font-bold]="bloco.tipo === 'h1' || bloco.tipo === 'h2'"
           [class.text-2xl]="bloco.tipo === 'h2'" [class.list-item]="bloco.tipo === 'list-item'"
           [class.ml-6]="bloco.tipo === 'list-item'" contenteditable="true" spellcheck="false"
           [attr.data-placeholder]="'Digite / para comandos...'"
+          [attr.data-id]="bloco.id"
           (blur)="salvarConteudo(bloco.id, elementoEditavel.innerHTML)"
           (keydown)="reagirTeclaPressionada($event, i, bloco)" [innerHTML]="bloco.conteudo">
         </div>
@@ -45,6 +46,15 @@
           <div class="absolute top-8 z-50 left-25">
             <app-menu-acoes (fechar)="fecharMenu()" (acaoSelecionada)="processarResultadoMenuAcoes(bloco.id, $event)"/>
           </div>
+        }
+
+        <!-- Menu de estilo -->
+        @if (idMenuAberto() === bloco.id && tipoMenuAberto() === 'estilo') {
+          <app-menu-estilo class="absolute"
+            [style.top.px]="posicaoMenuEstilo().top"
+            [style.left.px]="posicaoMenuEstilo().left"
+            (acao)="aplicarEstiloInline($event)">
+          </app-menu-estilo>
         }
       </div>
       }

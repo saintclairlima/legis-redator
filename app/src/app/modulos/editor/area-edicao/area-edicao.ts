@@ -1,4 +1,5 @@
-import { Component, ElementRef, signal, computed, viewChildren, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, signal, viewChildren, AfterViewInit, ChangeDetectionStrategy, HostListener } from '@angular/core';
+import { MenuEstilo } from '../menus/menu-estilo/menu-estilo';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MenuTipos } from '../menus/menu-tipos/menu-tipos';
@@ -15,7 +16,7 @@ interface BlocoEdicao {
 @Component({
   selector: 'app-area-edicao',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MenuAcoes, MenuTipos],
+  imports: [CommonModule, MatIconModule, MenuAcoes, MenuEstilo, MenuTipos],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './area-edicao.html',
   styleUrl: './area-edicao.css'
@@ -29,6 +30,62 @@ export class AreaEdicao implements AfterViewInit {
   idBlocoSobreposto = signal<string | null>(null);
   idMenuAberto = signal<string | null>(null);
   tipoMenuAberto = signal<TipoMenu>(null);
+  posicaoMenuEstilo = signal<{ top: number, left: number }>({ top: 0, left: 0 });
+
+  @HostListener('document:selectionchange')
+  verificarSelecaoTexto() {
+    const selecao = window.getSelection();
+
+    if (!selecao || selecao.rangeCount === 0 || selecao.isCollapsed) {
+      this.fecharMenu();
+      return;
+    }
+
+    const range = selecao.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    const elementoEditavel = (container instanceof HTMLElement ? container : container.parentElement)?.closest('.bloco-edicao');
+
+    if (!elementoEditavel) {
+      this.fecharMenu();
+      return;
+    }
+
+    const idBloco = elementoEditavel.getAttribute('data-id');
+    const wrapper = elementoEditavel.closest('.block-wrapper');
+
+    if (idBloco && wrapper) {
+      this.idMenuAberto.set(idBloco);
+      this.tipoMenuAberto.set('estilo');
+
+      const rectSelecao = range.getBoundingClientRect();
+      const rectWrapper = wrapper.getBoundingClientRect();
+
+      this.posicaoMenuEstilo.set({
+        top: rectSelecao.top - rectWrapper.top - 8, 
+        left: (rectSelecao.left - rectWrapper.left) + (rectSelecao.width / 2)
+      });
+    }
+  }
+
+  aplicarEstiloInline(tag: 'b' | 'i' | 'u') {
+    const selecao = window.getSelection();
+    if (!selecao || selecao.rangeCount === 0 || selecao.isCollapsed) return;
+
+    const range = selecao.getRangeAt(0);
+    const wrapper = document.createElement(tag);
+
+    try {
+      const conteudo = range.extractContents();
+      wrapper.appendChild(conteudo);
+      range.insertNode(wrapper);
+      const novaRange = document.createRange();
+      novaRange.selectNodeContents(wrapper);
+      selecao.removeAllRanges();
+      selecao.addRange(novaRange);
+    } catch (e) {
+      console.error("Erro ao aplicar estilo:", e);
+    }
+  }
 
   viewBlocos = viewChildren<ElementRef<HTMLDivElement>>('elementoEditavel');
 
