@@ -68,24 +68,43 @@ export class AreaEdicao implements AfterViewInit {
   }
 
   aplicarEstiloInline(tag: 'b' | 'i' | 'u') {
+    const comandos = {'b': 'bold', 'i': 'italic', 'u': 'underline'};
+    const comando = comandos[tag];
     const selecao = window.getSelection();
     if (!selecao || selecao.rangeCount === 0 || selecao.isCollapsed) return;
-
+    // Utilizado execCommand, apesar de ser deprecated, por facilitar o gerenciamento de seleção
+    // e aplicação de estilos sobrepostos. Cabe considerar uma implementação robusta, não deprecated
+    document.execCommand(comando, false);
+    
     const range = selecao.getRangeAt(0);
-    const wrapper = document.createElement(tag);
+    const elementoEditavel = (range.commonAncestorContainer instanceof HTMLElement 
+      ? range.commonAncestorContainer 
+      : range.commonAncestorContainer.parentElement)?.closest('.bloco-edicao');
 
-    try {
-      const conteudo = range.extractContents();
-      wrapper.appendChild(conteudo);
-      range.insertNode(wrapper);
-      const novaRange = document.createRange();
-      novaRange.selectNodeContents(wrapper);
-      selecao.removeAllRanges();
-      selecao.addRange(novaRange);
-    } catch (e) {
-      console.error("Erro ao aplicar estilo:", e);
+    if (elementoEditavel) {
+      elementoEditavel.normalize();
     }
   }
+
+  // aplicarEstiloInline(tag: 'b' | 'i' | 'u') {
+  //   const selecao = window.getSelection();
+  //   if (!selecao || selecao.rangeCount === 0 || selecao.isCollapsed) return;
+
+  //   const range = selecao.getRangeAt(0);
+  //   const wrapper = document.createElement(tag);
+
+  //   try {
+  //     const conteudo = range.extractContents();
+  //     wrapper.appendChild(conteudo);
+  //     range.insertNode(wrapper);
+  //     const novaRange = document.createRange();
+  //     novaRange.selectNodeContents(wrapper);
+  //     selecao.removeAllRanges();
+  //     selecao.addRange(novaRange);
+  //   } catch (e) {
+  //     console.error("Erro ao aplicar estilo:", e);
+  //   }
+  // }
 
   viewBlocos = viewChildren<ElementRef<HTMLDivElement>>('elementoEditavel');
 
