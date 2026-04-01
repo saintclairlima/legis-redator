@@ -9,3 +9,10 @@ export type AcaoOpcaoMenu =
   | { tipo: 'remover'; valor: null };
 
 export type TipoMenu = 'tipos' | 'acoes' | 'estilo' | null;
+
+export interface DadosBlocoEdicao {
+  id: string;
+  tipo: TipoBloco;
+  conteudo: string;
+  nivelIndentacao: number;
+}

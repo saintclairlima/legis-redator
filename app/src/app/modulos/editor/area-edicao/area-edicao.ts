@@ -4,14 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MenuTipos } from '../menus/menu-tipos/menu-tipos';
 import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
-import { AcaoOpcaoMenu, TipoBloco, TipoMenu } from '../types';
-
-interface BlocoEdicao {
-  id: string;
-  tipo: TipoBloco;
-  conteudo: string;
-  nivelIndentacao: number;
-}
+import { AcaoOpcaoMenu, DadosBlocoEdicao, TipoBloco, TipoMenu } from '../types';
 
 @Component({
   selector: 'app-area-edicao',
@@ -22,7 +15,7 @@ interface BlocoEdicao {
   styleUrl: './area-edicao.css'
 })
 export class AreaEdicao implements AfterViewInit {
-  blocos = signal<BlocoEdicao[]>([
+  blocos = signal<DadosBlocoEdicao[]>([
     { id: '1', tipo: 'paragraph', conteudo: '', nivelIndentacao: 0 },
   ]);
 
@@ -164,7 +157,7 @@ export class AreaEdicao implements AfterViewInit {
     if (mostrarMenu) {
       this.toggleMenu(idBloco, 'tipos');
     }
-    const novoBloco: BlocoEdicao = {
+    const novoBloco: DadosBlocoEdicao = {
       id: idBloco,
       tipo: blocoOrigem.tipo,
       conteudo: '',
@@ -180,7 +173,7 @@ export class AreaEdicao implements AfterViewInit {
     setTimeout(() => this.focusBloco(index + 1), 0);
   }
 
-  reagirTeclaPressionada(evento: KeyboardEvent, index: number, bloco: BlocoEdicao) {
+  reagirTeclaPressionada(evento: KeyboardEvent, index: number, bloco: DadosBlocoEdicao) {
     const elemento = evento.target as HTMLElement;
 
     if (evento.key === 'Enter' && !evento.shiftKey) {
