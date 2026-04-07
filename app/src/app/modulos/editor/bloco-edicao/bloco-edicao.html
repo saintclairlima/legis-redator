@@ -1,0 +1,49 @@
+<div class="flex items-center w-full">
+  <div
+    class="gutter flex items-center mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 select-none">
+    <div class="botoes-bloco__icone botoes-bloco__drag">
+      <mat-icon>drag_indicator</mat-icon>
+    </div>
+    <div class="botoes-bloco__icone" (click)="toggleMenu('acoes')">
+      <mat-icon>settings</mat-icon>
+    </div>
+    <div class="botoes-bloco__icone botoes-bloco__add" (click)="adicionarBlocoAbaixo(true)">
+      <mat-icon>add</mat-icon>
+    </div>
+  </div>
+
+  <!-- Conteúdo Editável -->
+  <div #elementoEditavel
+    class="fonte-padrao bloco-edicao flex-1 py-[3px] px-[2px] outline-none min-h-[1.5em] leading-[1.5] break-words whitespace-pre-wrap transition-colors duration-200"
+    [class.text-3xl]="dados().tipo === 'h1'" [class.font-bold]="dados().tipo === 'h1' || dados().tipo === 'h2'"
+    [class.text-2xl]="dados().tipo === 'h2'" [class.list-item]="dados().tipo === 'list-item'"
+    [class.ml-6]="dados().tipo === 'list-item'" contenteditable="true" spellcheck="false"
+    [attr.data-placeholder]="'Digite / para comandos...'"
+    [attr.data-id]="dados().id"
+    (blur)="salvarConteudo(elementoEditavel.innerHTML)"
+    (keydown)="reagirTeclaPressionada($event)" [innerHTML]="dados().conteudo">
+  </div>
+
+  <!-- Menu de Adição de Bloco -->
+  @if (tipoMenuAberto() === 'tipos') {
+    <div class="absolute top-8 z-50 left-25">
+      <app-menu-tipos (fechar)="fecharMenu()" (tipoSelecionado)="alterarTipoBloco($event)"/>
+    </div>
+  }
+
+  <!-- Menu de Ações -->
+  @if (tipoMenuAberto() === 'acoes') {
+    <div class="absolute top-8 z-50 left-25">
+      <app-menu-acoes (fechar)="fecharMenu()" (acaoSelecionada)="processarResultadoMenuAcoes($event)"/>
+    </div>
+  }
+
+  <!-- Menu de estilo -->
+  @if (tipoMenuAberto() === 'estilo') {
+    <app-menu-estilo class="absolute"
+      [style.top.px]="posicaoMenuEstilo().top"
+      [style.left.px]="posicaoMenuEstilo().left"
+      (acao)="aplicarEstiloInline($event)">
+    </app-menu-estilo>
+  }
+</div>

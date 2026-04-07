@@ -1,0 +1,34 @@
+.bloco-edicao:empty:before {
+  content: attr(data-placeholder);
+  color: #acaba9;
+  pointer-events: none;
+  display: block;
+}
+
+.botoes-bloco__icone {
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  color: #acaba9;
+}
+
+.botoes-bloco__icone:hover {
+  background-color: #efefef;
+}
+
+.botoes-bloco__drag {
+  cursor: grab;
+}
+
+.botoes-bloco__drag:active {
+  cursor: grabbing;
+}
+
+.botoes-bloco__add {
+  cursor: pointer;
+}
+
+.fonte-padrao {
+  font-size: 12pt;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #2c2c2c;
+}

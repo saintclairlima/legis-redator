@@ -1,11 +1,4 @@
 :host { display: block; }
-  
-.bloco-edicao:empty:before {
-  content: attr(data-placeholder);
-  color: #acaba9;
-  pointer-events: none;
-  display: block;
-}
 
 .dragging {
   opacity: 0.4;
@@ -19,28 +12,6 @@
 .list-item {
   display: list-item;
   list-style-type: disc;
-}
-
-.botoes-bloco__icone {
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  color: #acaba9;
-}
-
-.botoes-bloco__icone:hover {
-  background-color: #efefef;
-}
-
-.botoes-bloco__drag {
-  cursor: grab;
-}
-
-.botoes-bloco__drag:active {
-  cursor: grabbing;
-}
-
-.botoes-bloco__add {
-  cursor: pointer;
 }
 
 .fonte-padrao {

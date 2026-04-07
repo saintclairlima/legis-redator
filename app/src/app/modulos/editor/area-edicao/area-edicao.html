@@ -2,61 +2,14 @@
   <div class="mx-auto">
     <div class="flex flex-col gap-[2px]">
       @for (bloco of blocos(); track bloco.id; let i = $index) {
-      <div class="block-wrapper group flex items-start relative transition-all duration-200"
-        [class.dragging]="idBlocoSendoArrastado() === bloco.id" [class.drag-over]="idBlocoSobreposto() === bloco.id"
-        [style.marginLeft.px]="bloco.nivelIndentacao * 24" draggable="true"
-        (dragstart)="aoIniciarArrasto($event, bloco.id)" (dragend)="aoFinalizarArrasto()"
-        (dragover)="aoArrastarSobre($event, bloco.id)" (dragleave)="aoSairDoArrasto()"
-        (drop)="aoSoltar($event, bloco.id)">
-
-        <div
-          class="gutter flex items-center mr-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 select-none">
-          <div class="botoes-bloco__icone botoes-bloco__drag">
-            <mat-icon>drag_indicator</mat-icon>
-          </div>
-          <div class="botoes-bloco__icone" (click)="toggleMenu(bloco.id, 'acoes')">
-            <mat-icon>settings</mat-icon>
-          </div>
-          <div class="botoes-bloco__icone botoes-bloco__add" (click)="adicionarBlocoAbaixo(i, true)">
-            <mat-icon>add</mat-icon>
-          </div>
+        <div class="block-wrapper group flex items-start relative transition-all duration-200"
+          [class.dragging]="idBlocoSendoArrastado() === bloco.id" [class.drag-over]="idBlocoSobreposto() === bloco.id"
+          [style.marginLeft.px]="bloco.nivelIndentacao * 24" draggable="true"
+          (dragstart)="aoIniciarArrasto($event, bloco.id)" (dragend)="aoFinalizarArrasto()"
+          (dragover)="aoArrastarSobre($event, bloco.id)" (dragleave)="aoSairDoArrasto()"
+          (drop)="aoSoltar($event, bloco.id)">
+            <app-bloco-edicao class="w-full" [dados]="bloco"/>
         </div>
-
-        <!-- Conteúdo Editável -->
-        <div #elementoEditavel
-          class="fonte-padrao bloco-edicao flex-1 py-[3px] px-[2px] outline-none min-h-[1.5em] leading-[1.5] break-words whitespace-pre-wrap transition-colors duration-200"
-          [class.text-3xl]="bloco.tipo === 'h1'" [class.font-bold]="bloco.tipo === 'h1' || bloco.tipo === 'h2'"
-          [class.text-2xl]="bloco.tipo === 'h2'" [class.list-item]="bloco.tipo === 'list-item'"
-          [class.ml-6]="bloco.tipo === 'list-item'" contenteditable="true" spellcheck="false"
-          [attr.data-placeholder]="'Digite / para comandos...'"
-          [attr.data-id]="bloco.id"
-          (blur)="salvarConteudo(bloco.id, elementoEditavel.innerHTML)"
-          (keydown)="reagirTeclaPressionada($event, i, bloco)" [innerHTML]="bloco.conteudo">
-        </div>
-
-        <!-- Menu de Adição de Bloco -->
-        @if (idMenuAberto() === bloco.id && tipoMenuAberto() === 'tipos') {
-          <div class="absolute top-8 z-50 left-25">
-            <app-menu-tipos (fechar)="fecharMenu()" (tipoSelecionado)="alterarTipoBloco(bloco.id, $event)"/>
-          </div>
-        }
-
-        <!-- Menu de Ações -->
-        @if (idMenuAberto() === bloco.id && tipoMenuAberto() === 'acoes') {
-          <div class="absolute top-8 z-50 left-25">
-            <app-menu-acoes (fechar)="fecharMenu()" (acaoSelecionada)="processarResultadoMenuAcoes(bloco.id, $event)"/>
-          </div>
-        }
-
-        <!-- Menu de estilo -->
-        @if (idMenuAberto() === bloco.id && tipoMenuAberto() === 'estilo') {
-          <app-menu-estilo class="absolute"
-            [style.top.px]="posicaoMenuEstilo().top"
-            [style.left.px]="posicaoMenuEstilo().left"
-            (acao)="aplicarEstiloInline($event)">
-          </app-menu-estilo>
-        }
-      </div>
       }
     </div>
   </div>
