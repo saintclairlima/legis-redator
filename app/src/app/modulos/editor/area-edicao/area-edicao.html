@@ -1,14 +1,20 @@
 <div class="folha">
   <div class="mx-auto">
     <div class="flex flex-col gap-[2px]">
-      @for (bloco of blocos(); track bloco.id; let i = $index) {
+      @for (bloco of blocos(); track bloco.id; let idx = $index) {
         <div class="block-wrapper group flex items-start relative transition-all duration-200"
           [class.dragging]="idBlocoSendoArrastado() === bloco.id" [class.drag-over]="idBlocoSobreposto() === bloco.id"
           [style.marginLeft.px]="bloco.nivelIndentacao * 24" draggable="true"
           (dragstart)="aoIniciarArrasto($event, bloco.id)" (dragend)="aoFinalizarArrasto()"
           (dragover)="aoArrastarSobre($event, bloco.id)" (dragleave)="aoSairDoArrasto()"
           (drop)="aoSoltar($event, bloco.id)">
-            <app-bloco-edicao class="w-full" [dados]="bloco"/>
+            <app-bloco-edicao
+              class="w-full"
+              [dados]="bloco"
+              [dadosBlocoFoco]="dadosBlocoFoco()"
+              (aoAlterarDadosBloco)="aoAlterarDadosBloco(bloco.id, $event)"
+              (aoAdicionarBlocoAbaixo)="aoAdicionarBlocoAbaixo(idx, $event)"
+              (aoRemoverBloco)="aoRemoverBloco(bloco.id)"/>
         </div>
       }
     </div>

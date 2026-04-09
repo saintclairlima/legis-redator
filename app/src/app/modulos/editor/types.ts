@@ -16,3 +16,9 @@ export interface DadosBlocoEdicao {
   conteudo: string;
   nivelIndentacao: number;
 }
+
+export interface DadosBlocoEmFoco {
+  id: string;
+  cursorNoFim?: boolean | null;
+  mostrarMenu?: boolean | null;
+}

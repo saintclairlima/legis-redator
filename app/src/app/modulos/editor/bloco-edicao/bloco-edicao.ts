@@ -1,6 +1,6 @@
-import { Component, ElementRef, HostListener, input, model, output, signal, ViewChild } from '@angular/core';
+import { Component, effect, ElementRef, HostListener, input, output, signal, ViewChild } from '@angular/core';
 import { MenuEstilo } from '../menus/menu-estilo/menu-estilo';
-import { AcaoOpcaoMenu, DadosBlocoEdicao, TipoBloco, TipoMenu } from '../types';
+import { AcaoOpcaoMenu, DadosBlocoEdicao, DadosBlocoEmFoco, TipoBloco, TipoMenu } from '../types';
 import { MatIconModule } from '@angular/material/icon';
 import { MenuTipos } from '../menus/menu-tipos/menu-tipos';
 import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
@@ -12,10 +12,27 @@ import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
   styleUrl: './bloco-edicao.css',
 })
 export class BlocoEdicao {
-  dados = model.required<DadosBlocoEdicao>();
+  ngAfterViewInit(){
+    const estado = this.dadosBlocoFoco();
+
+    if (!estado) return;
+    if (estado.id !== this.dados().id) return;
+    
+    this.focar(estado.cursorNoFim);
+    if (estado.mostrarMenu) {
+        this.toggleMenu('tipos');
+    }
+  }
+  
+  dados = input.required<DadosBlocoEdicao>();
+  aoAlterarDadosBloco = output<DadosBlocoEdicao>();
+  aoAdicionarBlocoAbaixo = output<boolean | undefined>();
+  aoRemoverBloco = output();
+
   estaSendoArrastado = input<boolean>(false);
   estaSobreposto = input<boolean>(false);
 
+  dadosBlocoFoco = input<DadosBlocoEmFoco | null>();
   tipoMenuAberto = signal<TipoMenu>(null);
   posicaoMenuEstilo = signal({ top: 0, left: 0 });
 
@@ -23,15 +40,11 @@ export class BlocoEdicao {
   elementoEditavel!: ElementRef<HTMLDivElement>;
 
   adicionarBlocoAbaixo(mostrarMenu?: boolean) {
-    console.log('Adiciona bloco abaixo...');
-    // AFAZER: chamar o método do pai, passando o id e a posicao??
+    this.aoAdicionarBlocoAbaixo.emit(mostrarMenu);
   }
 
   alterarTipoBloco(novoTipo: TipoBloco) {
-    this.dados.update(dadosAtuais => ({
-      ...dadosAtuais,
-      tipo: novoTipo
-    }));
+    this.aoAlterarDadosBloco.emit({ ...this.dados(), tipo: novoTipo });
     this.fecharMenu();
   }
 
@@ -78,17 +91,16 @@ export class BlocoEdicao {
     this.tipoMenuAberto.set(null);
   }
 
-  focar(noFim: boolean = false) {
-    const el = this.elementoEditavel.nativeElement;
-    el.focus();
-
+  focar(noFim: boolean | null = false) {
+    const elemento = this.elementoEditavel.nativeElement;
+    elemento.focus();
     if (noFim) {
-      const range = document.createRange();
-      const sel = window.getSelection();
-      range.selectNodeContents(el);
-      range.collapse(false);
-      sel?.removeAllRanges();
-      sel?.addRange(range);
+      const intervalo = document.createRange();
+      const selecao = window.getSelection();
+      intervalo.selectNodeContents(elemento);
+      intervalo.collapse(false);
+      selecao?.removeAllRanges();
+      selecao?.addRange(intervalo);
     }
   }
 
@@ -104,7 +116,8 @@ export class BlocoEdicao {
       case 'violacoes':
         throw new Error ('Ação com suporte ainda não implementado.');
       case 'remover':
-        throw new Error ('Ação com suporte ainda não implementado.');
+        this.removerBloco();
+        break;
       default:
         throw new Error ('Ação com suporte ainda não implementado.');
     }
@@ -124,22 +137,14 @@ export class BlocoEdicao {
     if (evento.key === 'Backspace' && elementoEstaVazio) {
       this.removerBloco();
     }
-
-    if (evento.key === 'Tab') {
-      evento.preventDefault();
-      const delta = evento.shiftKey ? -1 : 1;
-      const novoNivelIndentacao = Math.max(0, Math.min(3, this.dados().nivelIndentacao + delta));
-      // AFAZER: alterar o nível de indentação no componente pai???
-    }
   }
 
   removerBloco() {
-    // AFAZER: Chamar método do pai para remover (passar id, posição????)
+    this.aoRemoverBloco.emit();
   }
 
   salvarConteudo(conteudoEditado: string) {
-    // AFAZER: chamar o método do pai para salvar o bloco na lista de blocos
-    // -- passar o conteudo e dados().id
+    this.aoAlterarDadosBloco.emit({ ...this.dados(), conteudo: conteudoEditado });
   }
 
   toggleMenu(tipoMenu: TipoMenu) {
@@ -150,10 +155,11 @@ export class BlocoEdicao {
   verificarSelecaoTexto() {
     const selecao = window.getSelection();
 
-    if (!selecao || selecao.rangeCount === 0 || selecao.isCollapsed) {
+    const selecaoInvalida = !selecao || selecao.rangeCount === 0 || selecao.isCollapsed;
+    if (selecaoInvalida && this.tipoMenuAberto() === 'estilo') {
       this.fecharMenu();
-      return;
     }
+    if (selecaoInvalida) return;
 
     const range = selecao.getRangeAt(0);
     const container = range.commonAncestorContainer;

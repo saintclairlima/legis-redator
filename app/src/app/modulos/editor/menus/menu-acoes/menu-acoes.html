@@ -16,7 +16,7 @@
       <!-- AFAZER: procurar nome melhor -->
       <mat-icon class="scale-75 text-gray-500">format_list_bulleted</mat-icon> Checar Violações
     </button>
-    <button class="opcao-menu-editor">
+    <button class="opcao-menu-editor" (click)="acaoSelecionada.emit({tipo: 'remover', valor: null})">
       <mat-icon class="scale-75 text-gray-500">delete</mat-icon> Remover
     </button>
 
