@@ -1,4 +1,4 @@
-import { Component, effect, ElementRef, HostListener, input, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, input, model, output, signal, ViewChild, WritableSignal } from '@angular/core';
 import { MenuEstilo } from '../menus/menu-estilo/menu-estilo';
 import { AcaoOpcaoMenu, DadosBlocoEdicao, DadosBlocoEmFoco, TipoBloco, TipoMenu } from '../types';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,28 +12,41 @@ import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
   styleUrl: './bloco-edicao.css',
 })
 export class BlocoEdicao {
+
+  TipoMenu = TipoMenu;
+  focoManual = model<boolean>();
+
+  constructor(){
+    effect(() => {
+      const focoManual = this.focoManual();
+      const dadosFoco = this.dadosBlocoFoco();
+
+      if (focoManual && dadosFoco) {
+        this.focar(dadosFoco.cursorNoFim ?? false);
+      }
+    });
+  }
+
   ngAfterViewInit(){
     const estado = this.dadosBlocoFoco();
 
     if (!estado) return;
     if (estado.id !== this.dados().id) return;
     
-    this.focar(estado.cursorNoFim);
+    this.focar(estado.cursorNoFim??false);
     if (estado.mostrarMenu) {
-        this.toggleMenu('tipos');
+      this.toggleMenu(TipoMenu.TIPOS);
     }
   }
   
-  dados = input.required<DadosBlocoEdicao>();
+  dadosSignal = input.required<WritableSignal<DadosBlocoEdicao>>();
+  dados = computed(() => this.dadosSignal()());
   aoAlterarDadosBloco = output<DadosBlocoEdicao>();
   aoAdicionarBlocoAbaixo = output<boolean | undefined>();
   aoRemoverBloco = output();
 
-  estaSendoArrastado = input<boolean>(false);
-  estaSobreposto = input<boolean>(false);
-
   dadosBlocoFoco = input<DadosBlocoEmFoco | null>();
-  tipoMenuAberto = signal<TipoMenu>(null);
+  tipoMenuAberto = signal<TipoMenu | null>(null);
   posicaoMenuEstilo = signal({ top: 0, left: 0 });
 
   @ViewChild('elementoEditavel')
@@ -60,38 +73,19 @@ export class BlocoEdicao {
     const range = selecao.getRangeAt(0);
     const elementoEditavel = (range.commonAncestorContainer instanceof HTMLElement 
       ? range.commonAncestorContainer 
-      : range.commonAncestorContainer.parentElement)?.closest('.bloco-edicao');
+      : range.commonAncestorContainer.parentElement)?.closest('[data-wrapper-bloco]');
 
     if (elementoEditavel) {
       elementoEditavel.normalize();
     }
   }
-  
-  // aplicarEstiloInline(tag: 'b' | 'i' | 'u') {
-  //   const selecao = window.getSelection();
-  //   if (!selecao || selecao.rangeCount === 0 || selecao.isCollapsed) return;
-
-  //   const range = selecao.getRangeAt(0);
-  //   const wrapper = document.createElement(tag);
-
-  //   try {
-  //     const conteudo = range.extractContents();
-  //     wrapper.appendChild(conteudo);
-  //     range.insertNode(wrapper);
-  //     const novaRange = document.createRange();
-  //     novaRange.selectNodeContents(wrapper);
-  //     selecao.removeAllRanges();
-  //     selecao.addRange(novaRange);
-  //   } catch (e) {
-  //     console.error("Erro ao aplicar estilo:", e);
-  //   }
-  // }
 
   fecharMenu() {
     this.tipoMenuAberto.set(null);
   }
 
-  focar(noFim: boolean | null = false) {
+  focar(noFim: boolean = false) {
+    if(!this.elementoEditavel || !this.elementoEditavel.nativeElement) return;
     const elemento = this.elementoEditavel.nativeElement;
     elemento.focus();
     if (noFim) {
@@ -102,6 +96,7 @@ export class BlocoEdicao {
       selecao?.removeAllRanges();
       selecao?.addRange(intervalo);
     }
+    this.focoManual.set(false)
   }
 
   processarResultadoMenuAcoes(acao: AcaoOpcaoMenu) {
@@ -156,14 +151,15 @@ export class BlocoEdicao {
     const selecao = window.getSelection();
 
     const selecaoInvalida = !selecao || selecao.rangeCount === 0 || selecao.isCollapsed;
-    if (selecaoInvalida && this.tipoMenuAberto() === 'estilo') {
+    if (selecaoInvalida && this.tipoMenuAberto() === TipoMenu.ESTILO) {
       this.fecharMenu();
     }
     if (selecaoInvalida) return;
 
     const range = selecao.getRangeAt(0);
     const container = range.commonAncestorContainer;
-    const elementoEditavel = (container instanceof HTMLElement ? container : container.parentElement)?.closest('.bloco-edicao');
+
+    const elementoEditavel = this.elementoEditavel?.nativeElement.contains(container) ? this.elementoEditavel.nativeElement : null;
 
     if (!elementoEditavel) {
       this.fecharMenu();
@@ -171,10 +167,10 @@ export class BlocoEdicao {
     }
 
     const idBloco = elementoEditavel.getAttribute('data-id');
-    const wrapper = elementoEditavel.closest('.block-wrapper');
+    const wrapper = elementoEditavel.closest('[data-wrapper-bloco]');
 
     if (idBloco == this.dados().id && wrapper) {
-      this.tipoMenuAberto.set('estilo');
+      this.tipoMenuAberto.set(TipoMenu.ESTILO);
 
       const rectSelecao = range.getBoundingClientRect();
       const rectWrapper = wrapper.getBoundingClientRect();

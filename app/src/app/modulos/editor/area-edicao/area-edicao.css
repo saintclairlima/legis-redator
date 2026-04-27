@@ -1,4 +1,47 @@
-:host { display: block; }
+.folha {
+  background-color: #ffffff;
+  min-height: 95vh;
+  height: auto;
+  width: 210mm;
+  padding-top: 20mm;
+  padding-right: 20mm;
+  margin: auto;
+  margin-bottom: 10px;
+}
+
+.bloco-wrapper{
+  user-select: none;
+  display: flex;
+  position: relative;
+}
+
+.botao-drag {
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  color: #acaba9;
+  display: flex;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.2s;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  align-self: center;
+}
+
+.bloco-wrapper:hover{
+  .botao-drag{
+    opacity: 1;
+  }
+}
+
+.botao-drag:hover {
+  background-color: #efefef;
+}
+
+botao-drag:active {
+  cursor: grabbing;
+}
 
 .dragging {
   opacity: 0.4;
@@ -7,31 +50,5 @@
 
 .drag-over {
   border-top: 2px solid #2eaadc;
-}
-
-.list-item {
-  display: list-item;
-  list-style-type: disc;
-}
-
-.fonte-padrao {
-  font-size: 12pt;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #2c2c2c;
-}
-
-.folha {
-  background-color: #ffffff;
-  height: 100vh;
-  width: 210mm;
-  padding-top: 20mm;
-  padding-right: 20mm;
-}
-
-.folha::selection {
-  background-color: rgba(46, 170, 220, 0.3);
-}
-
-.folha *::selection {
-  background-color: rgba(46, 170, 220, 0.3);
+  margin-left: 60px;
 }

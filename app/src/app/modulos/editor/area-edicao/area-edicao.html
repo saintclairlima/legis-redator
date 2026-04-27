@@ -1,22 +1,31 @@
 <div class="folha">
-  <div class="mx-auto">
-    <div class="flex flex-col gap-[2px]">
-      @for (bloco of blocos(); track bloco.id; let idx = $index) {
-        <div class="block-wrapper group flex items-start relative transition-all duration-200"
-          [class.dragging]="idBlocoSendoArrastado() === bloco.id" [class.drag-over]="idBlocoSobreposto() === bloco.id"
-          [style.marginLeft.px]="bloco.nivelIndentacao * 24" draggable="true"
-          (dragstart)="aoIniciarArrasto($event, bloco.id)" (dragend)="aoFinalizarArrasto()"
-          (dragover)="aoArrastarSobre($event, bloco.id)" (dragleave)="aoSairDoArrasto()"
-          (drop)="aoSoltar($event, bloco.id)">
-            <app-bloco-edicao
-              class="w-full"
-              [dados]="bloco"
-              [dadosBlocoFoco]="dadosBlocoFoco()"
-              (aoAlterarDadosBloco)="aoAlterarDadosBloco(bloco.id, $event)"
-              (aoAdicionarBlocoAbaixo)="aoAdicionarBlocoAbaixo(idx, $event)"
-              (aoRemoverBloco)="aoRemoverBloco(bloco.id)"/>
+  <div class="flex flex-col gap-2">
+    @for (blocoSignal of blocos(); track blocoSignal().id; let idx = $index) {
+      <div #wrapperBloco class="bloco-wrapper"
+        [style.marginLeft.px]="blocoSignal().nivelIndentacao * 24"
+        [class.dragging]="idBlocoSendoArrastado() === blocoSignal().id" [class.drag-over]="idBlocoSobreposto() === blocoSignal().id"
+         [style.transform]="idBlocoSendoArrastado()  === blocoSignal().id
+          ? 'translateY(' + (0) + 'px)'
+          : ''">
+
+        <div class="botao-drag"
+          draggable="true"
+          (dragstart)="aoIniciarArrasto($event, blocoSignal().id)" (dragend)="aoFinalizarArrasto()"
+          (dragover)="aoArrastarSobre($event, blocoSignal().id)" (dragleave)="aoSairDoArrasto()"
+          (drop)="aoSoltar($event, blocoSignal().id)"   
+        >
+          <mat-icon>drag_indicator</mat-icon>
         </div>
-      }
-    </div>
+
+        <app-bloco-edicao
+          class="w-full"
+          [dadosSignal]="blocoSignal"
+          [(focoManual)]="focoManual"
+          [dadosBlocoFoco]="dadosBlocoFoco()?.id === blocoSignal().id? dadosBlocoFoco() : null"
+          (aoAlterarDadosBloco)="aoAlterarDadosBloco(blocoSignal().id, $event)"
+          (aoAdicionarBlocoAbaixo)="aoAdicionarBlocoAbaixo(idx, $event)"
+          (aoRemoverBloco)="aoRemoverBloco(blocoSignal().id)"/>
+      </div>
+    }
   </div>
 </div>

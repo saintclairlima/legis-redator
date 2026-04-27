@@ -8,7 +8,11 @@ export type AcaoOpcaoMenu =
   | { tipo: 'violacoes'; valor: null }
   | { tipo: 'remover'; valor: null };
 
-export type TipoMenu = 'tipos' | 'acoes' | 'estilo' | null;
+export enum TipoMenu {
+  TIPOS = 'tipos',
+  ACOES = 'acoes',
+  ESTILO = 'estilo'
+}
 
 export interface DadosBlocoEdicao {
   id: string;

@@ -1,7 +1,7 @@
-import { Component, signal, viewChildren, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, model, ElementRef, QueryList, ViewChildren, WritableSignal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { DadosBlocoEdicao, DadosBlocoEmFoco, TipoMenu } from '../types';
+import { DadosBlocoEdicao, DadosBlocoEmFoco } from '../types';
 import { BlocoEdicao } from '../bloco-edicao/bloco-edicao';
 
 @Component({
@@ -12,28 +12,21 @@ import { BlocoEdicao } from '../bloco-edicao/bloco-edicao';
   templateUrl: './area-edicao.html',
   styleUrl: './area-edicao.css'
 })
-export class AreaEdicao implements AfterViewInit {
-  blocos = signal<DadosBlocoEdicao[]>([
-    this.gerarDadosBlocoVazio(),
-  ]);
+export class AreaEdicao {
+
+  blocos = signal<WritableSignal<DadosBlocoEdicao>[]>(
+    [this.gerarDadosBlocoVazio()].map(d => signal(d))
+  );
+
+  @ViewChildren('wrapperBloco') blocosHtml!: QueryList<ElementRef<HTMLElement>>;
 
   dadosBlocoFoco = signal<DadosBlocoEmFoco | null>(null);
-  
+  focoManual = model<boolean>(false);
   idBlocoSendoArrastado = signal<string | null>(null);
   idBlocoSobreposto = signal<string | null>(null);
 
-  idMenuAberto = signal<string | null>(null);
-  tipoMenuAberto = signal<TipoMenu>(null);
-  posicaoMenuEstilo = signal<{ top: number, left: number }>({ top: 0, left: 0 });
-
-  //viewBlocos = viewChildren(BlocoEdicao);
-
-  ngAfterViewInit() {
-    this.focarBloco(this.blocos()[0].id);
-  }
-
-  private focarBloco(id: string, cursorNoFim: boolean = false, mostrarMenu: boolean = false) {
-    this.dadosBlocoFoco.set({ id, cursorNoFim, mostrarMenu })
+  constructor(){
+    this.focarBloco(this.blocos()[0]().id);
   }
 
   aoIniciarArrasto(evento: DragEvent, id: string) {
@@ -56,30 +49,40 @@ export class AreaEdicao implements AfterViewInit {
     if (!draggedId || draggedId === targetId) return;
 
     this.blocos.update(current => {
-      const draggedIdx = current.findIndex(b => b.id === draggedId);
-      const targetIdx = current.findIndex(b => b.id === targetId);
-      const updated = [...current];
-      const [removed] = updated.splice(draggedIdx, 1);
-      updated.splice(targetIdx, 0, removed);
-      return updated;
+      const draggedIdx = current.findIndex(b => b().id === draggedId);
+      const targetIdx = current.findIndex(b => b().id === targetId);
+      const listaAtualizada = [...current];
+      const [removed] = listaAtualizada.splice(draggedIdx, 1);
+      listaAtualizada.splice(targetIdx, 0, removed);
+      return listaAtualizada;
     });
     this.aoFinalizarArrasto();
   }
 
+  private focarBloco(id: string, cursorNoFim: boolean = false, mostrarMenu: boolean = false) {
+    this.dadosBlocoFoco.set({ id, cursorNoFim, mostrarMenu })
+    this.focoManual.set(true);
+  }
+
+  desativarFocoManual(){
+    this.focoManual.set(false);
+    this.dadosBlocoFoco.set(null);
+  }
+
   aoAdicionarBlocoAbaixo(indice: number, mostrarMenu?: boolean) {
-    const dadosBlocoOrigem = this.blocos()[indice];
+    const dadosBlocoOrigem = this.blocos()[indice]();
     const idBloco = crypto.randomUUID();
 
-    const dadosNovoBloco: DadosBlocoEdicao = {
+    const novoSignal = signal<DadosBlocoEdicao>({
       id: idBloco,
       tipo: dadosBlocoOrigem.tipo,
       conteudo: '',
       nivelIndentacao: dadosBlocoOrigem.nivelIndentacao
-    };
+    });
 
     this.blocos.update(listaBlocos => {
       const listaAtualizada = [...listaBlocos];
-      listaAtualizada.splice(indice + 1, 0, dadosNovoBloco);
+      listaAtualizada.splice(indice + 1, 0, novoSignal);
       return listaAtualizada;
     });
     
@@ -87,45 +90,31 @@ export class AreaEdicao implements AfterViewInit {
   }
 
   aoAlterarDadosBloco(idBloco: string, blocoAtualizado: DadosBlocoEdicao) {
-    this.blocos.update(lista => {
-      const indice = lista.findIndex(b => b.id === idBloco);
-      if (indice === -1) {
-        return lista; 
-      }
-      const listaAtualizada = [...lista];
-      listaAtualizada[indice] = blocoAtualizado;
-      return listaAtualizada;
-    });
+    const indice = this.blocos().findIndex(signalBloco => signalBloco().id === idBloco);
+    if (indice === -1) {
+      return; 
+    }
+    this.blocos()[indice].set(blocoAtualizado);
   }
 
   aoRemoverBloco(idBloco: string) {
-    let indiceBlocoRemover = -1;
-    this.blocos.update(lista => {
-      indiceBlocoRemover = lista.findIndex(b => b.id === idBloco);    
-      // se idBloco não presentae na lista
-      if (indiceBlocoRemover === -1) {
-        return lista; 
-      }
-      // Se houver somente um bloco, não remove, apenas seta ele para ficar vazio
-      if (lista.length === 1) {
-        return [this.gerarDadosBlocoVazio()];
-      }
-
-      const listaAtualizada = [...lista];
-      listaAtualizada.splice(indiceBlocoRemover, 1);
-      return listaAtualizada;
-    });
-
-    if (indiceBlocoRemover === -1) return;
-
-    let idBlocoParaFocar;
-    if (indiceBlocoRemover-1 >= 0) {
-      idBlocoParaFocar = this.blocos()[indiceBlocoRemover - 1].id;
-    } else {
-      idBlocoParaFocar = this.blocos()[0].id;
-    }
+    let indiceRemover = this.blocos().findIndex(b => b().id === idBloco);
     
-    this.focarBloco(idBlocoParaFocar, true, false);
+    if (indiceRemover === -1) return;
+
+    // Se houver somente um bloco, não remove, apenas seta ele para ficar vazio
+    if (this.blocos().length === 1) {
+      this.blocos()[0].set(this.gerarDadosBlocoVazio());
+    } else {
+      this.blocos.update(lista => {
+        const nova = [...lista];
+        nova.splice(indiceRemover, 1);
+        return nova;
+      });
+    }
+
+    const proximoIndice = Math.max(0, indiceRemover - 1);
+    this.focarBloco(this.blocos()[proximoIndice]().id, true, false);
   }
 
   gerarDadosBlocoVazio(): DadosBlocoEdicao {
