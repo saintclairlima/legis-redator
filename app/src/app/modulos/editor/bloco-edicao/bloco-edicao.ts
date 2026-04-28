@@ -1,22 +1,34 @@
-import { Component, computed, effect, ElementRef, HostListener, input, model, output, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, input, model, output, signal, ViewChild, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { MenuEstilo } from '../menus/menu-estilo/menu-estilo';
 import { AcaoOpcaoMenu, DadosBlocoEdicao, DadosBlocoEmFoco, TipoBloco, TipoMenu } from '../types';
 import { MatIconModule } from '@angular/material/icon';
 import { MenuTipos } from '../menus/menu-tipos/menu-tipos';
 import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
+import { Editor } from '@tiptap/core';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
 
 @Component({
   selector: 'app-bloco-edicao',
   imports: [MatIconModule, MenuAcoes, MenuEstilo, MenuTipos],
   templateUrl: './bloco-edicao.html',
+  //Permite acessar classes css internas de bibliotecas utilizadas (ex: tiptap)
+  encapsulation: ViewEncapsulation.None,
   styleUrl: './bloco-edicao.css',
 })
 export class BlocoEdicao {
+
+  editor!: Editor;
+
+  ngOnDestroy() {
+    this.editor?.destroy();
+  }
 
   TipoMenu = TipoMenu;
   focoManual = model<boolean>();
 
   constructor(){
+
     effect(() => {
       const focoManual = this.focoManual();
       const dadosFoco = this.dadosBlocoFoco();
@@ -28,10 +40,48 @@ export class BlocoEdicao {
   }
 
   ngAfterViewInit(){
+    //Esse bloco precisa vir primeiro para garantir que o editor seja inicializado antes de tentarmos focar ou abrir menus,
+    // o que depende do editor estar pronto para refletir o estado atual do bloco.
+    this.editor = new Editor({
+      element: this.elementoEditavel.nativeElement,
+      extensions: [
+        StarterKit,
+        Placeholder.configure({
+          placeholder: 'Digite / para comandos...',
+          emptyNodeClass: 'is-placeholder', // Classe que o Tiptap usa
+        }),
+      ],
+      // Adicionamos as classes dinâmicas (h1, h2, list-item) diretamente no editor
+      editorProps: {
+        attributes: {
+          class: this.getClassesBloco(),
+          spellcheck: 'false',
+        },
+        // Substitui o (keydown) manual:
+        handleKeyDown: (view, event) => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            this.adicionarBlocoAbaixo();
+            return true; // Bloqueia o Enter padrão (que criaria parágrafo dentro do bloco)
+          }
+          if (event.key === 'Backspace' && this.editor.isEmpty) {
+            this.removerBloco();
+            return true;
+          }
+          return false;
+        },
+      },
+      content: this.dados().conteudo,
+      onUpdate: ({ editor }) => {
+        this.salvarConteudo(editor.getHTML());
+      },
+      onBlur: ({ editor }) => {
+        this.salvarConteudo(editor.getHTML());
+      }
+    });
+
     const estado = this.dadosBlocoFoco();
 
-    if (!estado) return;
-    if (estado.id !== this.dados().id) return;
+    if (!estado || estado.id !== this.dados().id) return;
     
     this.focar(estado.cursorNoFim??false);
     if (estado.mostrarMenu) {
@@ -49,7 +99,7 @@ export class BlocoEdicao {
   tipoMenuAberto = signal<TipoMenu | null>(null);
   posicaoMenuEstilo = signal({ top: 0, left: 0 });
 
-  @ViewChild('elementoEditavel')
+  @ViewChild('elementoEditavel', {static: true})
   elementoEditavel!: ElementRef<HTMLDivElement>;
 
   adicionarBlocoAbaixo(mostrarMenu?: boolean) {
@@ -58,26 +108,33 @@ export class BlocoEdicao {
 
   alterarTipoBloco(novoTipo: TipoBloco) {
     this.aoAlterarDadosBloco.emit({ ...this.dados(), tipo: novoTipo });
+    this.editor.setOptions({
+      editorProps: {
+        attributes: { class: this.getClassesBloco() }
+      }
+    });
     this.fecharMenu();
   }
 
   aplicarEstiloInline(tag: 'b' | 'i' | 'u') {
-    const comandos = {'b': 'bold', 'i': 'italic', 'u': 'underline'};
-    const comando = comandos[tag];
-    const selecao = window.getSelection();
-    if (!selecao || selecao.rangeCount === 0 || selecao.isCollapsed) return;
-    // Utilizado execCommand, apesar de ser deprecated, por facilitar o gerenciamento de seleção
-    // e aplicação de estilos sobrepostos. Cabe considerar uma implementação robusta, não deprecated
-    document.execCommand(comando, false);
-    
-    const range = selecao.getRangeAt(0);
-    const elementoEditavel = (range.commonAncestorContainer instanceof HTMLElement 
-      ? range.commonAncestorContainer 
-      : range.commonAncestorContainer.parentElement)?.closest('[data-wrapper-bloco]');
+    if (!this.editor) return;
 
-    if (elementoEditavel) {
-      elementoEditavel.normalize();
-    }
+    const acoes = {
+      'b': () => this.editor.chain().focus().toggleBold().run(),
+      'i': () => this.editor.chain().focus().toggleItalic().run(),
+      'u': () => this.editor.chain().focus().toggleUnderline().run()
+    };
+
+    acoes[tag]();
+  }
+
+  private getClassesBloco(): string {
+    const d = this.dados();
+    let classes = '';
+    if (d.tipo === 'h1') classes += 'text-3xl font-bold ';
+    if (d.tipo === 'h2') classes += 'text-2xl font-bold ';
+    if (d.tipo === 'list-item') classes += 'list-item ml-6 ';
+    return classes;
   }
 
   fecharMenu() {
@@ -85,18 +142,14 @@ export class BlocoEdicao {
   }
 
   focar(noFim: boolean = false) {
-    if(!this.elementoEditavel || !this.elementoEditavel.nativeElement) return;
-    const elemento = this.elementoEditavel.nativeElement;
-    elemento.focus();
+    if (!this.editor) return;
+
     if (noFim) {
-      const intervalo = document.createRange();
-      const selecao = window.getSelection();
-      intervalo.selectNodeContents(elemento);
-      intervalo.collapse(false);
-      selecao?.removeAllRanges();
-      selecao?.addRange(intervalo);
-    }
-    this.focoManual.set(false)
+      this.editor.chain().focus('end').run();
+    }else{
+      this.editor.chain().focus('start').run();
+    }    
+    this.focoManual.set(false);
   }
 
   processarResultadoMenuAcoes(acao: AcaoOpcaoMenu) {
@@ -115,22 +168,6 @@ export class BlocoEdicao {
         break;
       default:
         throw new Error ('Ação com suporte ainda não implementado.');
-    }
-  }
-
-  reagirTeclaPressionada(evento: KeyboardEvent) {    
-    const elemento = evento.target as HTMLElement;
-
-    if (evento.key === 'Enter' && !evento.shiftKey) {
-      evento.preventDefault();
-      this.adicionarBlocoAbaixo();
-    }
-
-    // O 'innerText' pode conter '\n' em campos contenteditable aparentemente vazios.
-    const elementoEstaVazio = elemento.innerText.trim() === '';
-
-    if (evento.key === 'Backspace' && elementoEstaVazio) {
-      this.removerBloco();
     }
   }
 

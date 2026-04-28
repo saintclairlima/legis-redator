@@ -9,19 +9,7 @@
     </div>
   </div>
 
-  <!-- Conteúdo Editável -->
-  <div #elementoEditavel
-    class="fonte-padrao bloco-edicao"
-    [class.text-3xl]="dados().tipo === 'h1'" [class.font-bold]="dados().tipo === 'h1' || dados().tipo === 'h2'"
-    [class.text-2xl]="dados().tipo === 'h2'" [class.list-item]="dados().tipo === 'list-item'"
-    [class.ml-6]="dados().tipo === 'list-item'" 
-    contenteditable="true" spellcheck="false"
-    [attr.data-placeholder]="'Digite / para comandos...'"
-    [attr.data-id]="dados().id"
-    (blur)="salvarConteudo(elementoEditavel.innerHTML)"
-    (keydown)="reagirTeclaPressionada($event)" 
-    [innerHTML]="dados().conteudo">
-  </div>
+  <div #elementoEditavel [attr.data-id]="dados().id" class="bloco-edicao"></div>
 
   <!-- Menu de Adição de Bloco -->
   @if (tipoMenuAberto() === TipoMenu.TIPOS) {
