@@ -2,17 +2,17 @@
   <div class="flex flex-col gap-2">
     @for (blocoSignal of blocos(); track blocoSignal().id; let idx = $index) {
       <div #wrapperBloco class="bloco-wrapper"
+        (dragover)="aoArrastarSobre($event, blocoSignal().id)" 
+        (drop)="aoSoltar($event, blocoSignal().id)"
         [style.marginLeft.px]="blocoSignal().nivelIndentacao * 24"
         [class.dragging]="idBlocoSendoArrastado() === blocoSignal().id" [class.drag-over]="idBlocoSobreposto() === blocoSignal().id"
          [style.transform]="idBlocoSendoArrastado()  === blocoSignal().id
           ? 'translateY(' + (0) + 'px)'
           : ''">
-
         <div class="botao-drag"
           draggable="true"
           (dragstart)="aoIniciarArrasto($event, blocoSignal().id)" (dragend)="aoFinalizarArrasto()"
-          (dragover)="aoArrastarSobre($event, blocoSignal().id)" (dragleave)="aoSairDoArrasto()"
-          (drop)="aoSoltar($event, blocoSignal().id)"   
+          (dragleave)="aoSairDoArrasto()"  
         >
           <mat-icon>drag_indicator</mat-icon>
         </div>
