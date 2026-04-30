@@ -76,6 +76,15 @@ export class SituacaoElemento{
   rotulo: RotuloSituacaoElemento;
 }
 
+export class Referencia {
+  id?: number;
+  texto: string;
+  metadados: string;
+  titulo: string;
+  autor: string;
+  score: number;
+}
+
 export class Elemento {
   id: number;
   idDocumento?: number;
@@ -90,4 +99,5 @@ export class Elemento {
   proximoElemento?: Elemento;
   idSituacaoElemento?: number;
   situacaoElemento: SituacaoElemento;
+  referencias?: Referencia[];
 }

@@ -15,6 +15,23 @@ export class MenuAcoes {
   acaoSelecionada = output<AcaoOpcaoMenu>()
   fechar = output<void>();
 
+  emitirAdicionarAnotacao(){
+    this.acaoSelecionada.emit({tipo: 'anotacao', valor: null});
+  }
+
+  emitirGerarReferencias(){
+    this.acaoSelecionada.emit({tipo: 'referencias', valor: null});
+  }
+  
+  emitirChecarViolacoes(){
+    // AFAZER: pensar no mecanismo de checar violações
+    // this.acaoSelecionada.emit({tipo: 'violacoes', valor: null});
+  }
+  
+  emitirRemover(){
+    this.acaoSelecionada.emit({tipo: 'remover', valor: null});
+  }
+
   toggleSubmenuTiposAberto(){
     this.submenuTiposAberto.update(valorAtual => !valorAtual);
   }

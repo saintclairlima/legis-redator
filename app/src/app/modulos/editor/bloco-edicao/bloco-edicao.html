@@ -8,8 +8,33 @@
       <mat-icon>add</mat-icon>
     </div>
   </div>
-
-  <div #elementoEditavel [attr.data-id]="dados().id" class="bloco-edicao"></div>
+  <div>
+    <div #elementoEditavel [attr.data-id]="dados().id" class="bloco-edicao"></div>
+    
+    @if (dados().referencias && dados().referencias!.length > 0) {
+      <div class="flex items-center fonte-small text-blue-600 hover:text-blue-400 transition-colors" (click)="toggleReferencias()">
+        <mat-icon class="cursor-pointer">{{ referenciasAbertas() ? 'arrow_drop_down' : 'arrow_right' }}</mat-icon>
+        <span class="cursor-pointer">Referências</span>
+      </div>
+      @if(referenciasAbertas()) {
+        <div class="referencias-wrapper">
+          @for (referencia of dados().referencias; track $index; let idx = $index) {
+            <div class="referencia">
+              <div class="referencia-cabecalho flex w-full justify-between items-center gap-2">
+                <span class="referencia-titulo">
+                  {{ referencia.titulo }} ({{ referencia.autor }})
+                </span>
+                <span class="referencia-score">
+                  Relevância: {{ (1-referencia.score) | percent:'1.1-1' }}
+                </span>
+              </div>
+              <p class="referencia-texto">{{ referencia.texto }}</p>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
 
   <!-- Menu de Adição de Bloco -->
   @if (tipoMenuAberto() === TipoMenu.TIPOS) {

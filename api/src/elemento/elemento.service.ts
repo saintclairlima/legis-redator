@@ -44,7 +44,13 @@ export class ElementoService {
 
           return await elementoRepo.findOneOrFail({
             where: { id: elementoSalvo.id },
-            relations: ['tipoElemento', 'situacaoElemento'],
+            relations: {
+              tipoElemento: true,
+              situacaoElemento: true,
+              proximoElemento: true,
+              referencias: true,
+              anotacoes: true
+            },
           });
         } catch {
           // Qualquer erro lançado aqui dentro fará o TypeORM executar o ROLLBACK automaticamente
@@ -75,6 +81,8 @@ export class ElementoService {
         tipoElemento: true,
         situacaoElemento: true,
         proximoElemento: true,
+        referencias: true,
+        anotacoes: true
       },
     });
   }

@@ -6,17 +6,17 @@
     <button class="opcao-menu-editor" (click)="toggleSubmenuTiposAberto()">
       <mat-icon class="scale-75 text-gray-500">notes</mat-icon> Alterar Tipo
     </button>
-    <button class="opcao-menu-editor">
+    <button class="opcao-menu-editor" (click)="emitirAdicionarAnotacao()">
       <mat-icon class="scale-75 text-gray-500">title</mat-icon> Adicionar Anotação
     </button>
-    <button class="opcao-menu-editor">
+    <button class="opcao-menu-editor" (click)="emitirGerarReferencias()">
       <mat-icon class="scale-75 text-gray-500">title</mat-icon> Gerar Referências
     </button>
     <button class="opcao-menu-editor">
       <!-- AFAZER: procurar nome melhor -->
       <mat-icon class="scale-75 text-gray-500">format_list_bulleted</mat-icon> Checar Violações
     </button>
-    <button class="opcao-menu-editor" (click)="acaoSelecionada.emit({tipo: 'remover', valor: null})">
+    <button class="opcao-menu-editor" (click)="emitirRemover()">
       <mat-icon class="scale-75 text-gray-500">delete</mat-icon> Remover
     </button>
 

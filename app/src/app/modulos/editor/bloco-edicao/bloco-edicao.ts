@@ -9,27 +9,41 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { Elemento, RotuloTipoElemento, TipoElemento } from '../../../entidades/elemento.model';
 import { ElementoService } from '../../../services/http/elemento.service';
+import { ApiIaService } from '../../../services/api-ia.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-bloco-edicao',
-  imports: [MatIconModule, MenuAcoes, MenuEstilo, MenuTipos],
+  imports: [CommonModule, MatIconModule, MenuAcoes, MenuEstilo, MenuTipos],
   templateUrl: './bloco-edicao.html',
   //Permite acessar classes css internas de bibliotecas utilizadas (ex: tiptap)
   encapsulation: ViewEncapsulation.None,
   styleUrl: './bloco-edicao.css',
 })
 export class BlocoEdicao {
+  dadosSignal = input.required<WritableSignal<Elemento>>();
+  dados = computed(() => this.dadosSignal()());
+  aoAlterarDadosBloco = output<Elemento>();
+  aoAdicionarBlocoAbaixo = output<boolean | undefined>();
+  aoRemoverBloco = output();
+
+  dadosBlocoFoco = input<DadosBlocoEmFoco | null>();
+  tipoMenuAberto = signal<TipoMenu | null>(null);
+  referenciasAbertas = signal<boolean>(false);
+  posicaoMenuEstilo = signal({ top: 0, left: 0 });
+
+  @ViewChild('elementoEditavel', {static: true})
+  elementoEditavel!: ElementRef<HTMLDivElement>;
 
   editor!: Editor;
-
-  ngOnDestroy() {
-    this.editor?.destroy();
-  }
 
   TipoMenu = TipoMenu;
   focoManual = model<boolean>();
 
-  constructor(private elementoService: ElementoService){
+  constructor(
+    private elementoService: ElementoService,
+    private iaService: ApiIaService,
+  ){
 
     effect(() => {
       const focoManual = this.focoManual();
@@ -39,6 +53,10 @@ export class BlocoEdicao {
         this.focar(dadosFoco.cursorNoFim ?? false);
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.editor?.destroy();
   }
 
   ngAfterViewInit(){
@@ -90,19 +108,6 @@ export class BlocoEdicao {
       this.toggleMenu(TipoMenu.TIPOS);
     }
   }
-  
-  dadosSignal = input.required<WritableSignal<Elemento>>();
-  dados = computed(() => this.dadosSignal()());
-  aoAlterarDadosBloco = output<Elemento>();
-  aoAdicionarBlocoAbaixo = output<boolean | undefined>();
-  aoRemoverBloco = output();
-
-  dadosBlocoFoco = input<DadosBlocoEmFoco | null>();
-  tipoMenuAberto = signal<TipoMenu | null>(null);
-  posicaoMenuEstilo = signal({ top: 0, left: 0 });
-
-  @ViewChild('elementoEditavel', {static: true})
-  elementoEditavel!: ElementRef<HTMLDivElement>;
 
   adicionarBlocoAbaixo(mostrarMenu?: boolean) {
     this.aoAdicionarBlocoAbaixo.emit(mostrarMenu);
@@ -157,15 +162,30 @@ export class BlocoEdicao {
     this.focoManual.set(false);
   }
 
+  gerarReferencias() {
+    if(!this.dados().texto) return
+    this.iaService.getReferencias(this.dados().texto!)
+    .subscribe({
+      next: (resposta) => {
+        const dadosAtuais = this.dados();
+        dadosAtuais.referencias = resposta;
+        this.aoAlterarDadosBloco.emit(dadosAtuais);
+      },
+      error: (erro) => console.error(erro),
+    });
+    this.fecharMenu();
+  }
+
   processarResultadoMenuAcoes(acao: AcaoOpcaoMenu) {
     switch (acao.tipo) {
       case 'alterarTipo':
-        this.alterarTipoBloco (acao.valor);
+        this.alterarTipoBloco(acao.valor);
         break;
       case 'anotacao':
         throw new Error ('Ação com suporte ainda não implementado.');
       case 'referencias':
-        throw new Error ('Ação com suporte ainda não implementado.');
+        this.gerarReferencias();
+        break;
       case 'violacoes':
         throw new Error ('Ação com suporte ainda não implementado.');
       case 'remover':
@@ -188,6 +208,10 @@ export class BlocoEdicao {
 
   toggleMenu(tipoMenu: TipoMenu) {
     this.tipoMenuAberto.update(tipoAtual => tipoAtual === tipoMenu ? null : tipoMenu);
+  }
+
+  toggleReferencias() {
+    this.referenciasAbertas.update(valorAtual => !valorAtual);
   }
 
   @HostListener('document:selectionchange')

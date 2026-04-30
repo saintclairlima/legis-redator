@@ -98,3 +98,35 @@
   z-index: 50;
   left: 96px;
 }
+
+.referencias-wrapper {
+  margin-left: 3rem;
+  border: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  padding: 15px;
+}
+
+.referencia {
+  line-height: 1.25;
+  margin-bottom: 1.25rem;
+}
+
+.referencia-titulo {
+  font-weight: 500;
+  font-size: smaller;
+  color:#46464e;
+}
+
+.referencia-texto {
+  font-size: small;
+  color:#6b6b77;
+  text-align: justify;
+}
+
+.referencia-score {
+  font-size: small;
+  text-align: justify;
+  line-height: 1.25;
+  color:#6b6b77;
+}
