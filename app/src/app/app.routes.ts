@@ -17,7 +17,7 @@ export const routes: Routes = [
         component: Inicio
     },
     {
-        path: 'editor',
+        path: 'editor/:id',
         component: Editor
     }
 ];

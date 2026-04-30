@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectionStrategy, model, ElementRef, QueryList, ViewChildren, WritableSignal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, model, ElementRef, QueryList, ViewChildren, WritableSignal, input, effect } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { DadosBlocoEmFoco } from '../types';
@@ -15,7 +15,7 @@ import { ElementoService } from '../../../services/http/elemento.service';
 })
 export class AreaEdicao {
 
-  idDocumento = 1;
+  idDocumento = input.required<number>();
 
   blocos = signal<WritableSignal<Elemento>[]>([]);
 
@@ -30,13 +30,20 @@ export class AreaEdicao {
   idBlocoSobreposto = signal<number | null>(null);
 
   constructor(private service: ElementoService){
-    
-    this.service.getByDocumento(this.idDocumento).subscribe(elementos => {
-      if (elementos.length) {
-        this.blocos.set(elementos.map(e => signal(e)));
-        this.focarBloco(elementos[0].id);
+
+    effect(() => {
+      const id = this.idDocumento();
+      if (id) {
+        this.service.getByDocumento(this.idDocumento()).subscribe(elementos => {
+          if (elementos.length) {
+            this.blocos.set(elementos.map(e => signal(e)));
+            this.focarBloco(elementos[0].id);
+          }
+        });
       }
-    });
+
+     })
+    
   }
 
   aoIniciarArrasto(evento: DragEvent, id: number) {
@@ -90,7 +97,7 @@ export class AreaEdicao {
       texto: '',
       idTipoElemento: dadosBlocoOrigem.tipoElemento.id,
       idSituacaoElemento: dadosBlocoOrigem.situacaoElemento.id,
-      idDocumento: this.idDocumento,
+      idDocumento: this.idDocumento(),
       idElementoSeguinte: idElementoSeguinte ?? undefined,
       idElementoPai: idElementoPai ?? undefined,
     }

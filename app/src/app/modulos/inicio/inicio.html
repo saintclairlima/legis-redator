@@ -1,1 +1,76 @@
-<p>inicio works!</p>
+<div class="inicio-container">
+  <header class="header">
+    <div>
+      <h1>Meus Documentos</h1>
+      <p>Gerenciamento dos documentos</p>
+    </div>
+    <button class="btn-primary" (click)="novoDocumento()">
+      + Novo Documento
+    </button>
+  </header>
+
+    <section class="filtros">
+    <form [formGroup]="form" class="flex flex-col gap-5 pt-5">
+      <div class="flex items-center gap-2">
+        <mat-form-field appearance="fill" class="flex-1">
+          <mat-label>Pesquisar</mat-label>
+          <input type="text" matInput formControlName="busca">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Situação</mat-label>
+          <mat-select formControlName="idSituacao">
+            <mat-option [value]="null">Todas</mat-option>
+            @for(s of situacoesDocumento; track s.id) {
+              <mat-option >{{ s.rotulo }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+      </div>
+    </form>
+  </section>
+
+    <!-- Grid de Documentos  -->
+  <div class="document-grid">
+    @for (doc of documentos(); track doc.id) {
+      <div class="doc-card">
+        <div class="doc-header">
+          <span class="doc-id">{{ doc.numero }}/{{ doc.ano }}</span>
+          <span [class]="'status-badge ' + doc.situacao.rotulo.toLowerCase()">
+            {{ doc.situacao.rotulo }}
+          </span>
+        </div>
+
+        <div class="doc-content">
+          <h3>{{ doc.rotulo }}</h3>
+          <p>{{ doc.descricao || 'Sem descrição informada.' }}</p>
+        </div>
+
+        <div class="doc-footer">
+          <div class="doc-info">
+          </div>
+          <div class="actions">
+            <button class="btn-icon" (click)="editar(doc.id)" title="Editar"><mat-icon>edit</mat-icon></button>
+            <button class="btn-icon" (click)="visualizar(doc.id)" title="Visualizar"><mat-icon>visibility</mat-icon></button>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <p>Nenhum documento encontrado.</p>
+      </div>
+    }
+  </div>
+
+  <!-- paginator -->
+  <mat-paginator
+    [length]="total()"
+    [pageSize]="size()"
+    [pageIndex]="page()"
+    [pageSizeOptions]="[5, 10, 20]"
+  >
+  </mat-paginator>
+
+
+</div>

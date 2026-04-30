@@ -1,0 +1,81 @@
+.inicio-container {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h1 { color: #2c3e50; margin: 0; font-size: 1.8rem; }
+    p { color: #7f8c8d; margin: 0; }
+  }
+
+  .document-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .doc-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+    border: 1px solid #eee;
+
+    &:hover { transform: translateY(-5px); }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      
+      .doc-id { font-weight: bold; color: #3498db; }
+    }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      &.rascunho { background: #ebedef; color: #5a6268; }
+      &.publicado { background: #d4edda; color: #155724; }
+    }
+
+    .doc-content {
+      margin-bottom: 1.5rem;
+      h3 { margin: 0 0 0.5rem 0; font-size: 1.1rem; color: #2c3e50; }
+      p { color: #95a5a6; font-size: 0.9rem; height: 3rem; overflow: hidden; }
+    }
+
+    .doc-footer {
+      border-top: 1px solid #eee;
+      padding-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+}
+
+.btn-primary {
+  background: #2c3e50;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.actions{
+
+  button{
+    cursor: pointer;
+
+  }
+}

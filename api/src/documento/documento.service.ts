@@ -3,30 +3,71 @@ import { CreateDocumentoDto } from './dto/create-documento.dto';
 import { UpdateDocumentoDto } from './dto/update-documento.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DocumentoEntity } from './entities/documento.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
+import { DocumentoQueryDto } from './dto/listar-documento.dto';
+import { ListaDtoResposta } from 'src/entidade-base/lista.dto';
+import { Like } from 'typeorm';
 
 @Injectable()
 export class DocumentoService {
-  
   constructor(
     @InjectRepository(DocumentoEntity)
-    private documentoRepo: Repository<DocumentoEntity>){}
+    private documentoRepo: Repository<DocumentoEntity>,
+  ) {}
 
   create(createDocumentoDto: CreateDocumentoDto): Promise<DocumentoEntity> {
     const documento = this.documentoRepo.create(createDocumentoDto);
     return this.documentoRepo.save(documento);
   }
 
-  findAll(): Promise<DocumentoEntity[]> {
-    return this.documentoRepo.find({
+  async findAll(
+    query: DocumentoQueryDto,
+  ): Promise<ListaDtoResposta<DocumentoEntity>> {
+    // ✅ defaults seguros
+    const busca = query.busca ?? '';
+    const idSituacao = query.idSituacao ?? null;
+    const page = Number.isFinite(query.page) ? query.page : 0;
+    const size = Number.isFinite(query.size) ? query.size : 10;
+    const sort = query.sort ?? 'numero,asc';
+
+    // ✅ proteção sort
+    const [campoRaw, direcaoRaw] = sort.split(',');
+
+    const campo = campoRaw || 'numero';
+    const direcao = direcaoRaw?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+    // ⚠️ whitelist (MUITO importante contra SQL injection)
+    const camposPermitidos = ['numero', 'rotulo', 'dataCriacao'];
+    const campoSeguro = camposPermitidos.includes(campo) ? campo : 'numero';
+
+    // ✅ montagem dinâmica do where
+    const where: FindOptionsWhere<DocumentoEntity> = {};
+
+    if (busca) {
+      where.rotulo = Like(`%${busca}%`);
+    }
+
+    if (idSituacao) {
+      where.idSituacaoDocumento = idSituacao;
+    }
+
+    const resultado = await this.documentoRepo.findAndCount({
+      skip: page * size,
+      take: size,
+      where,
+      order: {
+        [campoSeguro]: direcao,
+      },
       relations: {
-        usuarioCriacao: { pessoa: true},
+        usuarioCriacao: { pessoa: true },
         usuarioAlteracao: { pessoa: true },
         situacao: true,
         elementos: true,
-        permissoes:  true
-      }
+        permissoes: true,
+      },
     });
+
+    return new ListaDtoResposta(resultado);
   }
 
   async findOne(id: number): Promise<DocumentoEntity> {
@@ -37,21 +78,24 @@ export class DocumentoService {
           usuarioCriacao: { pessoa: true },
           usuarioAlteracao: { pessoa: true },
           situacao: true,
-          elementos: true
-        }
+          elementos: true,
+        },
       });
     } catch {
       throw new NotFoundException(`Documento ${id} não encontrado`);
     }
   }
 
-  async update(id: number, updateDocumentoDto: UpdateDocumentoDto): Promise<DocumentoEntity> {
+  async update(
+    id: number,
+    updateDocumentoDto: UpdateDocumentoDto,
+  ): Promise<DocumentoEntity> {
     const documento = await this.findOne(id);
     Object.assign(documento, updateDocumentoDto);
     return this.documentoRepo.save(documento);
   }
 
-  async remove(id: number, idUsuario: number): Promise<DocumentoEntity> {  
+  async remove(id: number, idUsuario: number): Promise<DocumentoEntity> {
     const documento = await this.findOne(id);
     documento.idUsuarioExclusao = idUsuario;
     await this.documentoRepo.save(documento);
