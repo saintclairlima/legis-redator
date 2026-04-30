@@ -7,6 +7,10 @@ export class CreateElementoDto {
 
   @IsNumber()
   @IsOptional()
+  idElementoAnterior?: number;
+
+  @IsNumber()
+  @IsOptional()
   idElementoPai?: number;
 
   @IsNumber()

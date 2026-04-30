@@ -1,40 +1,50 @@
 import { Component, signal, ChangeDetectionStrategy, model, ElementRef, QueryList, ViewChildren, WritableSignal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { DadosBlocoEdicao, DadosBlocoEmFoco } from '../types';
+import { DadosBlocoEmFoco } from '../types';
 import { BlocoEdicao } from '../bloco-edicao/bloco-edicao';
+import { Elemento, RotuloTipoElemento, TipoElemento, DtoCriacaoElemento, SituacaoElemento, RotuloSituacaoElemento, getTipoElemento, getSituacaoElemento } from '../../../entidades/elemento.model';
+import { ElementoService } from '../../../services/http/elemento.service';
 
 @Component({
   selector: 'app-area-edicao',
   standalone: true,
   imports: [BlocoEdicao, CommonModule, MatIconModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './area-edicao.html',
   styleUrl: './area-edicao.css'
 })
 export class AreaEdicao {
 
-  blocos = signal<WritableSignal<DadosBlocoEdicao>[]>(
-    [this.gerarDadosBlocoVazio()].map(d => signal(d))
-  );
+  idDocumento = 1;
+
+  blocos = signal<WritableSignal<Elemento>[]>([]);
+
+  //AFAZER: Mudar para usar o tipo de elemento
+  nivelIdentacao = 0;
 
   @ViewChildren('wrapperBloco') blocosHtml!: QueryList<ElementRef<HTMLElement>>;
 
   dadosBlocoFoco = signal<DadosBlocoEmFoco | null>(null);
   focoManual = model<boolean>(false);
-  idBlocoSendoArrastado = signal<string | null>(null);
-  idBlocoSobreposto = signal<string | null>(null);
+  idBlocoSendoArrastado = signal<number | null>(null);
+  idBlocoSobreposto = signal<number | null>(null);
 
-  constructor(){
-    this.focarBloco(this.blocos()[0]().id);
+  constructor(private service: ElementoService){
+    
+    this.service.getByDocumento(this.idDocumento).subscribe(elementos => {
+      if (elementos.length) {
+        this.blocos.set(elementos.map(e => signal(e)));
+        this.focarBloco(elementos[0].id);
+      }
+    });
   }
 
-  aoIniciarArrasto(evento: DragEvent, id: string) {
+  aoIniciarArrasto(evento: DragEvent, id: number) {
     this.idBlocoSendoArrastado.set(id);
-    evento.dataTransfer?.setData('text/plain', id);
+    evento.dataTransfer?.setData('text/plain', id.toString());
   }
 
-  aoArrastarSobre(event: DragEvent, id: string) {
+  aoArrastarSobre(event: DragEvent, id: number) {
     event.preventDefault();
     if (this.idBlocoSendoArrastado() !== id) this.idBlocoSobreposto.set(id);
   }
@@ -43,9 +53,9 @@ export class AreaEdicao {
 
   aoFinalizarArrasto() { this.idBlocoSendoArrastado.set(null); this.idBlocoSobreposto.set(null); }
 
-  aoSoltar(event: DragEvent, targetId: string) {
+  aoSoltar(event: DragEvent, targetId: number) {
     event.preventDefault();
-    const draggedId = event.dataTransfer?.getData('text/plain');
+    const draggedId = Number(event.dataTransfer?.getData('text/plain'));
     if (!draggedId || draggedId === targetId) return;
 
     this.blocos.update(current => {
@@ -59,7 +69,7 @@ export class AreaEdicao {
     this.aoFinalizarArrasto();
   }
 
-  private focarBloco(id: string, cursorNoFim: boolean = false, mostrarMenu: boolean = false) {
+  private focarBloco(id: number, cursorNoFim: boolean = false, mostrarMenu: boolean = false) {
     this.dadosBlocoFoco.set({ id, cursorNoFim, mostrarMenu })
     this.focoManual.set(true);
   }
@@ -70,26 +80,37 @@ export class AreaEdicao {
   }
 
   aoAdicionarBlocoAbaixo(indice: number, mostrarMenu?: boolean) {
-    const dadosBlocoOrigem = this.blocos()[indice]();
-    const idBloco = crypto.randomUUID();
+    const dadosBlocoOrigem = this.blocos()[indice]()
+    const idElementoSeguinte = this.blocos()[indice + 1]?.().id;
+    //AFAZER criar a lógica de pegar o elemento pai
+    const idElementoPai = undefined
 
-    const novoSignal = signal<DadosBlocoEdicao>({
-      id: idBloco,
-      tipo: dadosBlocoOrigem.tipo,
-      conteudo: '',
-      nivelIndentacao: dadosBlocoOrigem.nivelIndentacao
-    });
+    const novoElemento: DtoCriacaoElemento ={
+      idElementoAnterior: dadosBlocoOrigem.id,
+      texto: '',
+      idTipoElemento: dadosBlocoOrigem.tipoElemento.id,
+      idSituacaoElemento: dadosBlocoOrigem.situacaoElemento.id,
+      idDocumento: this.idDocumento,
+      idElementoSeguinte: idElementoSeguinte ?? undefined,
+      idElementoPai: idElementoPai ?? undefined,
+    }
 
-    this.blocos.update(listaBlocos => {
-      const listaAtualizada = [...listaBlocos];
-      listaAtualizada.splice(indice + 1, 0, novoSignal);
-      return listaAtualizada;
+    this.service.criar(novoElemento).subscribe(elementoCriado => {
+      //Atualiza o bloco anterior para apontar para o novo elemento
+      this.blocos()[indice].update(bloco => ({ ...bloco, idElementoSeguinte: elementoCriado.id }));
+
+      const novoSignal = signal(elementoCriado);
+      this.blocos.update(listaBlocos => {
+        const listaAtualizada = [...listaBlocos];
+        listaAtualizada.splice(indice + 1, 0, novoSignal);
+        return listaAtualizada;
+      });
+      
+      this.focarBloco(elementoCriado.id, true, mostrarMenu);
     });
-    
-    this.focarBloco(idBloco, true, mostrarMenu);
   }
 
-  aoAlterarDadosBloco(idBloco: string, blocoAtualizado: DadosBlocoEdicao) {
+  aoAlterarDadosBloco(idBloco: number, blocoAtualizado: Elemento) {
     const indice = this.blocos().findIndex(signalBloco => signalBloco().id === idBloco);
     if (indice === -1) {
       return; 
@@ -97,7 +118,7 @@ export class AreaEdicao {
     this.blocos()[indice].set(blocoAtualizado);
   }
 
-  aoRemoverBloco(idBloco: string) {
+  aoRemoverBloco(idBloco: number) {
     let indiceRemover = this.blocos().findIndex(b => b().id === idBloco);
     
     if (indiceRemover === -1) return;
@@ -117,7 +138,9 @@ export class AreaEdicao {
     this.focarBloco(this.blocos()[proximoIndice]().id, true, false);
   }
 
-  gerarDadosBlocoVazio(): DadosBlocoEdicao {
-    return { id: crypto.randomUUID(), tipo: 'paragraph', conteudo: '', nivelIndentacao: 0 }
+  gerarDadosBlocoVazio(): Elemento {
+    const tipoElementoPadrao: TipoElemento = getTipoElemento(RotuloTipoElemento.ARTIGO);
+    const situacaoElementoPadrao: SituacaoElemento = getSituacaoElemento(RotuloSituacaoElemento.Rascunho);
+    return { id: 0, tipoElemento: tipoElementoPadrao, texto: '', situacaoElemento: situacaoElementoPadrao };
   }
 }

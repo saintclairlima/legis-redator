@@ -1,12 +1,14 @@
 import { Component, computed, effect, ElementRef, HostListener, input, model, output, signal, ViewChild, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { MenuEstilo } from '../menus/menu-estilo/menu-estilo';
-import { AcaoOpcaoMenu, DadosBlocoEdicao, DadosBlocoEmFoco, TipoBloco, TipoMenu } from '../types';
+import { AcaoOpcaoMenu, DadosBlocoEmFoco, TipoMenu } from '../types';
 import { MatIconModule } from '@angular/material/icon';
 import { MenuTipos } from '../menus/menu-tipos/menu-tipos';
 import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import { Elemento, RotuloTipoElemento, TipoElemento } from '../../../entidades/elemento.model';
+import { ElementoService } from '../../../services/http/elemento.service';
 
 @Component({
   selector: 'app-bloco-edicao',
@@ -27,7 +29,7 @@ export class BlocoEdicao {
   TipoMenu = TipoMenu;
   focoManual = model<boolean>();
 
-  constructor(){
+  constructor(private elementoService: ElementoService){
 
     effect(() => {
       const focoManual = this.focoManual();
@@ -70,7 +72,7 @@ export class BlocoEdicao {
           return false;
         },
       },
-      content: this.dados().conteudo,
+      content: this.dados().texto || '',
       onUpdate: ({ editor }) => {
         this.salvarConteudo(editor.getHTML());
       },
@@ -89,9 +91,9 @@ export class BlocoEdicao {
     }
   }
   
-  dadosSignal = input.required<WritableSignal<DadosBlocoEdicao>>();
+  dadosSignal = input.required<WritableSignal<Elemento>>();
   dados = computed(() => this.dadosSignal()());
-  aoAlterarDadosBloco = output<DadosBlocoEdicao>();
+  aoAlterarDadosBloco = output<Elemento>();
   aoAdicionarBlocoAbaixo = output<boolean | undefined>();
   aoRemoverBloco = output();
 
@@ -106,13 +108,16 @@ export class BlocoEdicao {
     this.aoAdicionarBlocoAbaixo.emit(mostrarMenu);
   }
 
-  alterarTipoBloco(novoTipo: TipoBloco) {
-    this.aoAlterarDadosBloco.emit({ ...this.dados(), tipo: novoTipo });
-    this.editor.setOptions({
-      editorProps: {
-        attributes: { class: this.getClassesBloco() }
-      }
-    });
+  alterarTipoBloco(novoTipo: TipoElemento) {
+    const blocoAtualizado = { id: this.dados().id, tipoElemento: novoTipo };
+    this.elementoService.atualizar(blocoAtualizado.id, blocoAtualizado).subscribe(dadosAtualizados => { 
+      this.aoAlterarDadosBloco.emit(dadosAtualizados);
+      this.editor.setOptions({
+        editorProps: {
+          attributes: { class: this.getClassesBloco() }
+        }
+      });
+    })
     this.fecharMenu();
   }
 
@@ -131,9 +136,9 @@ export class BlocoEdicao {
   private getClassesBloco(): string {
     const d = this.dados();
     let classes = '';
-    if (d.tipo === 'h1') classes += 'text-3xl font-bold ';
-    if (d.tipo === 'h2') classes += 'text-2xl font-bold ';
-    if (d.tipo === 'list-item') classes += 'list-item ml-6 ';
+    if (d.tipoElemento?.rotulo === RotuloTipoElemento.TITULO) classes += 'text-3xl font-bold ';
+    if (d.tipoElemento?.rotulo === RotuloTipoElemento.CAPITULO) classes += 'text-2xl font-bold ';
+    if (d.tipoElemento?.rotulo === RotuloTipoElemento.ALINEA || d.tipoElemento?.rotulo === RotuloTipoElemento.INCISO) classes += 'list-item ml-6 ';
     return classes;
   }
 
@@ -176,7 +181,9 @@ export class BlocoEdicao {
   }
 
   salvarConteudo(conteudoEditado: string) {
-    this.aoAlterarDadosBloco.emit({ ...this.dados(), conteudo: conteudoEditado });
+    this.elementoService.atualizar(this.dados().id, { texto: conteudoEditado }).subscribe(dadosAtualizados => {
+      this.aoAlterarDadosBloco.emit(dadosAtualizados);
+    });
   }
 
   toggleMenu(tipoMenu: TipoMenu) {
@@ -203,7 +210,7 @@ export class BlocoEdicao {
       return;
     }
 
-    const idBloco = elementoEditavel.getAttribute('data-id');
+    const idBloco = Number(elementoEditavel.getAttribute('data-id'));
     const wrapper = elementoEditavel.closest('[data-wrapper-bloco]');
 
     if (idBloco == this.dados().id && wrapper) {

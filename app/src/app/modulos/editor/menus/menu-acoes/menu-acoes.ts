@@ -1,7 +1,8 @@
 import { Component, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MenuTipos } from '../menu-tipos/menu-tipos';
-import { AcaoOpcaoMenu, TipoBloco } from '../../types';
+import { AcaoOpcaoMenu } from '../../types';
+import { TipoElemento } from '../../../../entidades/elemento.model';
 
 @Component({
   selector: 'app-menu-acoes',
@@ -18,7 +19,7 @@ export class MenuAcoes {
     this.submenuTiposAberto.update(valorAtual => !valorAtual);
   }
 
-  retornarTipoSelecionado(tipoBloco: TipoBloco) {
+  retornarTipoSelecionado(tipoBloco: TipoElemento) {
     this.acaoSelecionada.emit({tipo: 'alterarTipo', valor: tipoBloco});
   }
 }

@@ -45,7 +45,7 @@ export class ElementoEntity extends EntidadeBaseAuditavel{
   @JoinColumn({ name: 'idElementoSeguinte', foreignKeyConstraintName: 'FK_Elemento_Seguinte_Unique' })
   proximoElemento?: ElementoEntity;
 
-  @Column({ select: false})
+  @Column()
   idSituacaoElemento: number;
 
   @ManyToOne(() => SituacaoElementoEntity)

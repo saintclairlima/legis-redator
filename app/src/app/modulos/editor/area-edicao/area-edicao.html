@@ -1,10 +1,10 @@
 <div class="folha">
   <div class="flex flex-col gap-2">
-    @for (blocoSignal of blocos(); track blocoSignal().id; let idx = $index) {
+    @for (blocoSignal of blocos(); track $index; let idx = $index) {
       <div #wrapperBloco class="bloco-wrapper"
         (dragover)="aoArrastarSobre($event, blocoSignal().id)" 
         (drop)="aoSoltar($event, blocoSignal().id)"
-        [style.marginLeft.px]="blocoSignal().nivelIndentacao * 24"
+        [style.marginLeft.px]="nivelIdentacao * 24"
         [class.dragging]="idBlocoSendoArrastado() === blocoSignal().id" [class.drag-over]="idBlocoSobreposto() === blocoSignal().id"
          [style.transform]="idBlocoSendoArrastado()  === blocoSignal().id
           ? 'translateY(' + (0) + 'px)'

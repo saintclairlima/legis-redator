@@ -3,7 +3,7 @@ import { ElementoService } from './elemento.service';
 import { CreateElementoDto } from './dto/create-elemento.dto';
 import { UpdateElementoDto } from './dto/update-elemento.dto';
 import { ElementoEntity } from './entities/elemento.entity';
-import type { RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
+import { type RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
 
 @Controller('elemento')
 export class ElementoController {
@@ -27,6 +27,11 @@ export class ElementoController {
   @Get(':id')
   findOne(@Param('id') id: string): Promise<ElementoEntity> {
     return this.elementoService.findOne(+id);
+  }
+
+  @Get('documento/:id')
+  getByDocumento(@Param('id') id: string): Promise<ElementoEntity[]> {
+    return this.elementoService.getByDocumento(+id);
   }
 
   @Patch(':id')

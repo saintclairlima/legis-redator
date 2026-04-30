@@ -44,7 +44,7 @@ export class ApiService {
     return this.http.patch(`${this.apiHost}/${caminho}`, body);
   }
   
-  delete(caminho: StringLiteral) {
+  delete(caminho: string) {
     return this.http.delete<any>(`${this.apiHost}/${caminho}`);
   }
 
