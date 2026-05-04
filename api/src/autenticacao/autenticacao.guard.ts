@@ -40,7 +40,6 @@ export class AutenticacaoGuard implements CanActivate {
     
     try {
       const payload: DadosUsuarioLogado = await this.tokenService.validarToken(token);
-      console.log()
       requisicao.usuarioLogado = payload;
     } catch (error) {
       throw new UnauthorizedException('Token inválido');
