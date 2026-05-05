@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, ElementRef, HostListener, input, model, output, signal, ViewChild, ViewEncapsulation, WritableSignal } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, input, model, output, signal, viewChild, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
@@ -34,9 +34,8 @@ export class BlocoEdicao {
   tipoMenuAberto = signal<TipoMenu | null>(null);
   referenciasAbertas = signal<boolean>(false);
   posicaoMenuEstilo = signal({ top: 0, left: 0 });
-
-  @ViewChild('elementoEditavel', {static: true})
-  elementoEditavel!: ElementRef<HTMLDivElement>;
+  
+  elementoEditavel = viewChild.required<ElementRef<HTMLDivElement>>('elementoEditavel');
 
   editorTipTap!: Editor;
   TipoMenu = TipoMenu;
@@ -77,7 +76,7 @@ export class BlocoEdicao {
     //Esse bloco precisa vir primeiro para garantir que o editor seja inicializado antes de tentarmos focar ou abrir menus,
     // o que depende do editor estar pronto para refletir o estado atual do bloco.
     this.editorTipTap = new Editor({
-      element: this.elementoEditavel.nativeElement,
+      element: this.elementoEditavel().nativeElement,
       extensions: [
         StarterKit,
         Placeholder.configure({
@@ -248,7 +247,8 @@ export class BlocoEdicao {
     const range = selecao.getRangeAt(0);
     const container = range.commonAncestorContainer;
 
-    const elementoEditavel = this.elementoEditavel?.nativeElement.contains(container) ? this.elementoEditavel.nativeElement : null;
+    const elementoReferencia = this.elementoEditavel();
+    const elementoEditavel = elementoReferencia?.nativeElement.contains(container) ? elementoReferencia.nativeElement : null;
 
     if (!elementoEditavel) {
       this.fecharMenu();
