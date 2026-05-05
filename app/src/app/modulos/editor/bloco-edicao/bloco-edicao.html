@@ -12,7 +12,7 @@
     <div #elementoEditavel [attr.data-id]="dados().id" class="bloco-edicao"></div>
     
     @if (dados().referencias && dados().referencias!.length > 0) {
-      <div class="flex items-center fonte-small text-blue-600 hover:text-blue-400 transition-colors" (click)="toggleReferencias()">
+      <div class="flex items-center text-sm text-blue-600 hover:text-blue-400 transition-colors" (click)="toggleReferencias()">
         <mat-icon class="cursor-pointer">{{ referenciasAbertas() ? 'arrow_drop_down' : 'arrow_right' }}</mat-icon>
         <span class="cursor-pointer">Referências</span>
       </div>
@@ -25,7 +25,7 @@
                   {{ referencia.titulo }} ({{ referencia.autor }})
                 </span>
                 <span class="referencia-score">
-                  Relevância: {{ (1-referencia.score) | percent:'1.1-1' }}
+                  Relevância: {{ (1.0 - referencia.score) | percent:'1.1-1' }}
                 </span>
               </div>
               <p class="referencia-texto">{{ referencia.texto }}</p>

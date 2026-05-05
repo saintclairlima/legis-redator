@@ -19,6 +19,7 @@
   margin-right: 10px;
   transition: opacity 0.2s;
   user-select: none;
+  align-self: flex-start;
 }
 
 .bloco-edicao:empty:before {
@@ -105,17 +106,32 @@
   background-color: #f9f9f9;
   border-radius: 5px;
   padding: 15px;
+
+  max-height: 50vh;
+  overflow-y: scroll;
 }
 
 .referencia {
   line-height: 1.25;
   margin-bottom: 1.25rem;
+  border-top: 1px solid #46464e;
+  padding-top: 0.5rem;
+}
+
+.referencia-cabecalho {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .referencia-titulo {
   font-weight: 500;
   font-size: smaller;
   color:#46464e;
+  flex: 1; 
+  word-break: break-word;
 }
 
 .referencia-texto {
@@ -129,4 +145,6 @@
   text-align: justify;
   line-height: 1.25;
   color:#6b6b77;
+  white-space: nowrap; 
+  flex-shrink: 0;
 }

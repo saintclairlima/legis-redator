@@ -1,5 +1,7 @@
 <div class="flex">
     <div class="flex m-auto">
-        <app-area-edicao [idDocumento]="id()" class="mt-3"/>
+        @if(id()) {
+            <app-area-edicao [idDocumento]="id()!" class="mt-3"/>
+        }
     </div>
 </div>
