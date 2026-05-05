@@ -25,11 +25,11 @@ export class ElementoEntity extends EntidadeBaseAuditavel{
   @JoinColumn({ name: 'idTipoElemento', foreignKeyConstraintName: 'Elemento_TipoElemento_FK' })
   tipoElemento: TipoElementoEntity;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'nvarchar', length: 'max', default: '' })
   texto: string;
 
   @Column({ nullable: true })
-  idElementoPai?: number;
+  idElementoPai?: number | null;
 
   @ManyToOne(() => ElementoEntity, (elemento) => elemento.filhos)
   @JoinColumn({ name: 'idElementoPai', foreignKeyConstraintName: 'Elemento_Pai_FK' })
@@ -39,7 +39,7 @@ export class ElementoEntity extends EntidadeBaseAuditavel{
   filhos: ElementoEntity[];
 
   @Column({ nullable: true })
-  idElementoSeguinte?: number;
+  idElementoSeguinte?: number | null;
 
   @OneToOne(() => ElementoEntity, { nullable: true })
   @JoinColumn({ name: 'idElementoSeguinte', foreignKeyConstraintName: 'FK_Elemento_Seguinte_Unique' })

@@ -21,15 +21,27 @@ export class ElementoService {
     return await this.dataSource.transaction(
       async (transactionalEntityManager) => {
         // Obter o repository ligado a ESTA transação específica
-        const elementoRepo =
-          transactionalEntityManager.getRepository(ElementoEntity);
+        const elementoRepo = transactionalEntityManager.getRepository(ElementoEntity);
 
         try {
-          // 1. Criar e salvar o novo elemento
+          let proximoId: number;
+
+          if (createElementoDto.idElementoAnterior) {
+            // Recupera o elemento anterior ao inserido
+            const anterior = await elementoRepo.findOneByOrFail({ id: createElementoDto.idElementoAnterior });
+
+            // guarda o próximo atual só por segurança, mas deve ser igual a createElementoDto.idElementoSeguinte
+            if (anterior.idElementoSeguinte) proximoId = anterior.idElementoSeguinte;
+
+            // remove o idElementoSeguinte temporariamente, para não dar choque com o elemento sendo inserido
+            // já que idElementoSeguinte é unique
+            await elementoRepo.update(anterior.id, { idElementoSeguinte: null });
+          }
+          
+          // cria novo elemento
           const novoElemento = elementoRepo.create(createElementoDto);
           const elementoSalvo = await elementoRepo.save(novoElemento);
 
-          // 2. Atualizar o elemento anterior, se existir
           if (createElementoDto.idElementoAnterior) {
             const resultado = await elementoRepo.update(
               createElementoDto.idElementoAnterior,

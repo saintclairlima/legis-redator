@@ -7,7 +7,7 @@ export class AnotacaoEntity  extends EntidadeBaseAuditavel {
   @PrimaryGeneratedColumn({ name: 'idAnotacao', primaryKeyConstraintName: 'Anotacao_PK' })
   id: number;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'nvarchar', length: 'max', default: '' })
   texto: string;
 
   @Column({ nullable: true })

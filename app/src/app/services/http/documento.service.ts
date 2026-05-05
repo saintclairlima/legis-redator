@@ -19,8 +19,8 @@ export class DocumentoService {
     return this.apiService.getOne(this.endpoint, query);
   }
 
-  criar(elemento: DtoCriacaoDocumento): Observable<Documento> {
-    return this.apiService.post(this.endpoint, elemento);
+  criar(dadosDocumento: DtoCriacaoDocumento): Observable<Documento> {
+    return this.apiService.post(this.endpoint, dadosDocumento);
   }
 
   atualizar(id: number, elemento: Partial<DtoCriacaoDocumento>): Observable<Documento> {
