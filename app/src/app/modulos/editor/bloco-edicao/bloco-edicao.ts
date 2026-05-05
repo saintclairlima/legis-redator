@@ -1,16 +1,17 @@
+import { CommonModule } from '@angular/common';
 import { Component, computed, effect, ElementRef, HostListener, input, model, output, signal, ViewChild, ViewEncapsulation, WritableSignal } from '@angular/core';
-import { MenuEstilo } from '../menus/menu-estilo/menu-estilo';
-import { AcaoOpcaoMenu, DadosBlocoEmFoco, TipoMenu } from '../types';
 import { MatIconModule } from '@angular/material/icon';
-import { MenuTipos } from '../menus/menu-tipos/menu-tipos';
-import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { AcaoOpcaoMenu, DadosBlocoEmFoco, TipoMenu } from '../types';
+import { ApiIaService } from '../../../services/api-ia.service';
 import { Elemento, RotuloTipoElemento, TipoElemento } from '../../../entidades/elemento.model';
 import { ElementoService } from '../../../services/http/elemento.service';
-import { ApiIaService } from '../../../services/api-ia.service';
-import { CommonModule } from '@angular/common';
+import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
+import { MenuEstilo } from '../menus/menu-estilo/menu-estilo';
+import { MenuTipos } from '../menus/menu-tipos/menu-tipos';
 
 @Component({
   selector: 'app-bloco-edicao',
@@ -22,12 +23,14 @@ import { CommonModule } from '@angular/common';
 })
 export class BlocoEdicao {
   dadosSignal = input.required<WritableSignal<Elemento>>();
-  dados = computed(() => this.dadosSignal()());
+  dadosBlocoFoco = input<DadosBlocoEmFoco | null>();
+  focoManual = model<boolean>();
+
   aoAlterarDadosBloco = output<Elemento>();
   aoAdicionarBlocoAbaixo = output<boolean | undefined>();
   aoRemoverBloco = output();
 
-  dadosBlocoFoco = input<DadosBlocoEmFoco | null>();
+  dados = computed(() => this.dadosSignal()());
   tipoMenuAberto = signal<TipoMenu | null>(null);
   referenciasAbertas = signal<boolean>(false);
   posicaoMenuEstilo = signal({ top: 0, left: 0 });
@@ -35,10 +38,10 @@ export class BlocoEdicao {
   @ViewChild('elementoEditavel', {static: true})
   elementoEditavel!: ElementRef<HTMLDivElement>;
 
-  editor!: Editor;
-
+  editorTipTap!: Editor;
   TipoMenu = TipoMenu;
-  focoManual = model<boolean>();
+
+  private atualizarConteudoSubject = new Subject<string>();
 
   constructor(
     private elementoService: ElementoService,
@@ -56,13 +59,24 @@ export class BlocoEdicao {
   }
 
   ngOnDestroy() {
-    this.editor?.destroy();
+    this.atualizarConteudoSubject.complete();
+    this.editorTipTap?.destroy();
+  }
+
+  ngOnInit() {
+    // Esperar 1 segundo para salvar o conteúdo alterado
+    this.atualizarConteudoSubject.pipe(
+      debounceTime(1000),
+      distinctUntilChanged()
+    ).subscribe(conteudo => {
+      this.salvarConteudo(conteudo);
+    });
   }
 
   ngAfterViewInit(){
     //Esse bloco precisa vir primeiro para garantir que o editor seja inicializado antes de tentarmos focar ou abrir menus,
     // o que depende do editor estar pronto para refletir o estado atual do bloco.
-    this.editor = new Editor({
+    this.editorTipTap = new Editor({
       element: this.elementoEditavel.nativeElement,
       extensions: [
         StarterKit,
@@ -83,7 +97,7 @@ export class BlocoEdicao {
             this.adicionarBlocoAbaixo();
             return true; // Bloqueia o Enter padrão (que criaria parágrafo dentro do bloco)
           }
-          if (event.key === 'Backspace' && this.editor.isEmpty) {
+          if (event.key === 'Backspace' && this.editorTipTap.isEmpty) {
             this.removerBloco();
             return true;
           }
@@ -92,9 +106,11 @@ export class BlocoEdicao {
       },
       content: this.dados().texto || '',
       onUpdate: ({ editor }) => {
-        this.salvarConteudo(editor.getHTML());
+        // salva com delay de 1 segundo após caracter digitado
+        this.atualizarConteudoSubject.next(editor.getHTML());
       },
       onBlur: ({ editor }) => {
+        // em caso de blur, salva imediatamente
         this.salvarConteudo(editor.getHTML());
       }
     });
@@ -117,7 +133,7 @@ export class BlocoEdicao {
     const blocoAtualizado = { id: this.dados().id, tipoElemento: novoTipo };
     this.elementoService.atualizar(blocoAtualizado.id, blocoAtualizado).subscribe(dadosAtualizados => { 
       this.aoAlterarDadosBloco.emit(dadosAtualizados);
-      this.editor.setOptions({
+      this.editorTipTap.setOptions({
         editorProps: {
           attributes: { class: this.getClassesBloco() }
         }
@@ -127,12 +143,12 @@ export class BlocoEdicao {
   }
 
   aplicarEstiloInline(tag: 'b' | 'i' | 'u') {
-    if (!this.editor) return;
+    if (!this.editorTipTap) return;
 
     const acoes = {
-      'b': () => this.editor.chain().focus().toggleBold().run(),
-      'i': () => this.editor.chain().focus().toggleItalic().run(),
-      'u': () => this.editor.chain().focus().toggleUnderline().run()
+      'b': () => this.editorTipTap.chain().focus().toggleBold().run(),
+      'i': () => this.editorTipTap.chain().focus().toggleItalic().run(),
+      'u': () => this.editorTipTap.chain().focus().toggleUnderline().run()
     };
 
     acoes[tag]();
@@ -152,12 +168,12 @@ export class BlocoEdicao {
   }
 
   focar(noFim: boolean = false) {
-    if (!this.editor) return;
+    if (!this.editorTipTap) return;
 
     if (noFim) {
-      this.editor.chain().focus('end').run();
+      this.editorTipTap.chain().focus('end').run();
     }else{
-      this.editor.chain().focus('start').run();
+      this.editorTipTap.chain().focus('start').run();
     }    
     this.focoManual.set(false);
   }
@@ -201,7 +217,12 @@ export class BlocoEdicao {
   }
 
   salvarConteudo(conteudoEditado: string) {
-    this.elementoService.atualizar(this.dados().id, { texto: conteudoEditado }).subscribe(dadosAtualizados => {
+    const htmlTratado = conteudoEditado.replace(/^<p>/, '').replace(/<\/p>$/, '');
+    // Só salva se mudanças tiverem acontecido no conteúdo
+    if (htmlTratado === this.dados().texto) {
+      return; 
+    }
+    this.elementoService.atualizar(this.dados().id, { texto: htmlTratado }).subscribe(dadosAtualizados => {
       this.aoAlterarDadosBloco.emit(dadosAtualizados);
     });
   }
