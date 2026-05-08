@@ -21,40 +21,40 @@ export class ElementoService {
     return await this.dataSource.transaction(
       async (transactionalEntityManager) => {
         // Obter o repository ligado a ESTA transação específica
-        const elementoRepo = transactionalEntityManager.getRepository(ElementoEntity);
+        const repoTransacao = transactionalEntityManager.getRepository(ElementoEntity);
 
         try {
           let proximoId: number;
 
           if (createElementoDto.idElementoAnterior) {
             // Recupera o elemento anterior ao inserido
-            const anterior = await elementoRepo.findOneByOrFail({ id: createElementoDto.idElementoAnterior });
+            const anterior = await repoTransacao.findOneByOrFail({ id: createElementoDto.idElementoAnterior });
 
             // guarda o próximo atual só por segurança, mas deve ser igual a createElementoDto.idElementoSeguinte
             if (anterior.idElementoSeguinte) proximoId = anterior.idElementoSeguinte;
 
             // remove o idElementoSeguinte temporariamente, para não dar choque com o elemento sendo inserido
             // já que idElementoSeguinte é unique
-            await elementoRepo.update(anterior.id, { idElementoSeguinte: null });
+            await repoTransacao.update(anterior.id, { idElementoSeguinte: null });
           }
           
           // cria novo elemento
-          const novoElemento = elementoRepo.create(createElementoDto);
-          const elementoSalvo = await elementoRepo.save(novoElemento);
+          const novoElemento = repoTransacao.create(createElementoDto);
+          const elementoSalvo = await repoTransacao.save(novoElemento);
 
           if (createElementoDto.idElementoAnterior) {
-            const resultado = await elementoRepo.update(
+            const resultado = await repoTransacao.update(
               createElementoDto.idElementoAnterior,
               { idElementoSeguinte: elementoSalvo.id },
             );
 
             // Opcional: Validar se o elemento anterior realmente existia
             if (resultado.affected === 0) {
-              throw new Error('Elemento anterior não encontrado.');
+              throw new Error(`Elemento anterior (id ${createElementoDto.idElementoAnterior}) não encontrado.`);
             }
           }
 
-          return await elementoRepo.findOneOrFail({
+          return await repoTransacao.findOneOrFail({
             where: { id: elementoSalvo.id },
             relations: {
               tipoElemento: true,
@@ -64,9 +64,10 @@ export class ElementoService {
               anotacoes: true
             },
           });
-        } catch {
-          // Qualquer erro lançado aqui dentro fará o TypeORM executar o ROLLBACK automaticamente
-          throw new InternalServerErrorException('Erro ao criar elemento');
+        } catch (erro) {
+          throw new InternalServerErrorException('Erro ao criar elemento', {
+            cause: erro,
+          });
         }
       },
     );
@@ -86,8 +87,28 @@ export class ElementoService {
     });
   }
 
+  ordenarElementos(elementos: ElementoEntity[]): ElementoEntity[] {
+    // AFAZER: Verificar a lógica de ordenação
+    if (!elementos.length) return [];
+
+    const mapa = new Map(elementos.map(e => [e.id, e]));
+    const apontados = new Set(elementos.map(e => e.idElementoSeguinte).filter((id): id is number => id !== null));
+
+    const resultado: ElementoEntity[] = [];
+    const visitados = new Set<number>();
+
+    let atual: ElementoEntity | undefined = elementos.find(e => !apontados.has(e.id)) ?? elementos[0];
+
+    while (atual && !visitados.has(atual.id)) {
+      visitados.add(atual.id);
+      resultado.push(atual);
+      atual = atual.idElementoSeguinte ? mapa.get(atual.idElementoSeguinte) : undefined;
+    }
+    return resultado;
+  }
+
   async getByDocumento(idDocumento: number): Promise<ElementoEntity[]> {
-    return await this.elementoRepo.find({
+    const elementos = await this.elementoRepo.find({
       where: { idDocumento },
       relations: {
         tipoElemento: true,
@@ -97,6 +118,8 @@ export class ElementoService {
         anotacoes: true
       },
     });
+
+    return this.ordenarElementos(elementos);
   }
 
   async findOne(id: number): Promise<ElementoEntity> {
@@ -128,9 +151,38 @@ export class ElementoService {
   }
 
   async remove(idElemento: number, idUsuario: number): Promise<ElementoEntity> {
-    const elemento = await this.findOne(idElemento);
-    elemento.idUsuarioExclusao = idUsuario;
-    await this.elementoRepo.save(elemento);
-    return this.elementoRepo.softRemove(elemento);
+    return await this.dataSource.transaction(
+      async (transactionalEntityManager) => {
+        const repoTransacao = transactionalEntityManager.getRepository(ElementoEntity);
+
+        const elemento = await repoTransacao.findOneBy({ id: idElemento });
+        if (!elemento) {
+          throw new NotFoundException(`Elemento com id ${idElemento} não encontrado`);
+        }
+
+        try {
+          // AFAZER: considerar se faz sentido fazer softRemove, já que o elemento
+          // removido vai ficar órfão, sem referências de qual elemento vinha antes e depois
+          const idElementoSeguinte = elemento.idElementoSeguinte;
+          elemento.idElementoSeguinte = null;
+          elemento.idUsuarioExclusao = idUsuario;          
+          await repoTransacao.save(elemento);
+          const resultadoRemocao = await repoTransacao.softRemove(elemento);
+
+          const elementoAnterior = await repoTransacao.findOneBy({ idElementoSeguinte: idElemento });
+          if (elementoAnterior) {
+            elementoAnterior.idElementoSeguinte = idElementoSeguinte;
+            elementoAnterior.idUsuarioAlteracao = idUsuario;
+            await repoTransacao.save(elementoAnterior);
+          }
+
+          return resultadoRemocao;
+
+        } catch (erro) {
+          console.error(`Erro fatal ao remover elemento com id ${idElemento}`, erro);
+          throw new InternalServerErrorException(`Erro ao remover elemento com id ${idElemento}`, { cause: erro });
+        }
+      }
+    );
   }
 }

@@ -92,7 +92,7 @@ export class AreaEdicao {
     //AFAZER criar a lógica de pegar o elemento pai
     const idElementoPai = undefined
 
-    const novoElemento: DtoCriacaoElemento ={
+    const novoElemento: DtoCriacaoElemento = {
       idElementoAnterior: dadosBlocoOrigem.id,
       texto: '',
       idTipoElemento: dadosBlocoOrigem.tipoElemento.id,
@@ -134,10 +134,16 @@ export class AreaEdicao {
     if (this.blocos().length === 1) {
       this.blocos()[0].set(this.gerarDadosBlocoVazio());
     } else {
-      this.blocos.update(lista => {
-        const nova = [...lista];
-        nova.splice(indiceRemover, 1);
-        return nova;
+      this.service.deletar(idBloco)
+      .subscribe({
+        next: () => {
+          this.blocos.update(lista => {
+            const nova = [...lista];
+            nova.splice(indiceRemover, 1);
+            return nova;
+          });
+        },
+        error: (erro) => {}
       });
     }
 

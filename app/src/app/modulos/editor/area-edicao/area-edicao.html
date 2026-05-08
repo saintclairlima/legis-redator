@@ -1,6 +1,6 @@
 <div class="folha">
   <div class="flex flex-col gap-2">
-    @for (blocoSignal of blocos(); track $index; let idx = $index) {
+    @for (blocoSignal of blocos(); track blocoSignal().id; let idx = $index) {
       <div #wrapperBloco class="bloco-wrapper"
         (dragover)="aoArrastarSobre($event, blocoSignal().id)" 
         (drop)="aoSoltar($event, blocoSignal().id)"
