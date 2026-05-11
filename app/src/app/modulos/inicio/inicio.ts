@@ -76,8 +76,9 @@ export class Inicio{
       mergeWith(situacao$, paginator$),
       switchMap(() => {
         return this.documentoService.buscar({
-          busca: this.form.value.busca,
-          idSituacao: this.form.value.idSituacao,
+          // Usa o operador spread pra enviar só o que não for null
+          ...(this.form.value.busca && { busca: this.form.value.busca }),
+          ...(this.form.value.idSituacao != null && { idSituacao: this.form.value.idSituacao }),
           page: this.paginator.pageIndex,
           size: this.paginator.pageSize,
           sort: 'numero,asc'
