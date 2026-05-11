@@ -45,6 +45,21 @@ export class ElementoController {
     return this.elementoService.update(+id, updateElementoDto);
   }
 
+  @Patch('reposicionar/:id')
+  reposicionar(
+    @Param('id') idElementoAlvo: string,
+    @Body() dadosElementoAncora: {idElementoAncora: number},
+    @Req() req: RequisicaoComUsuario
+  ): Promise<ElementoEntity> {
+    const usuario = req.usuarioLogado;
+    
+    return this.elementoService.reposicionar(
+      +idElementoAlvo,
+      dadosElementoAncora.idElementoAncora,
+      usuario.idUsuario
+    );
+  }
+
   @Delete(':id')
   remove(
     @Param('id') id: string,
