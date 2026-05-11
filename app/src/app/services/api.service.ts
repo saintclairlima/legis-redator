@@ -15,7 +15,7 @@ export class ApiService {
     let params = new HttpParams();    
     if (parametros) {
       Object.keys(parametros).forEach((chave) => {
-        params.append(chave, parametros[chave]);
+        params = params.append(chave, parametros[chave]);
       });
     }
     return this.http.get<any>(`${this.apiHost}/${caminho}`, {params});
@@ -25,7 +25,7 @@ export class ApiService {
     let params = new HttpParams();    
     if (parametros) {
       Object.keys(parametros).forEach((chave) => {
-        params.append(chave, parametros[chave]);
+        params = params.append(chave, parametros[chave]);
       });
     }
     return this.http.get<any[]>(`${this.apiHost}/${caminho}`, {params});

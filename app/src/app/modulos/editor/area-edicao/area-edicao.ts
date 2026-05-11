@@ -60,17 +60,32 @@ export class AreaEdicao {
 
   aoFinalizarArrasto() { this.idBlocoSendoArrastado.set(null); this.idBlocoSobreposto.set(null); }
 
-  aoSoltar(event: DragEvent, targetId: number) {
+  aoSoltar(event: DragEvent, idAncora: number) {
     event.preventDefault();
-    const draggedId = Number(event.dataTransfer?.getData('text/plain'));
-    if (!draggedId || draggedId === targetId) return;
+    const idAlvo = Number(event.dataTransfer?.getData('text/plain'));
+    if (!idAlvo || idAlvo === idAncora) return;
+    
+    // Guarda o estado da interface para fazer rollback em caso de erro
+    const estadoAnterior = this.blocos();
 
-    this.blocos.update(current => {
-      const draggedIdx = current.findIndex(b => b().id === draggedId);
-      const targetIdx = current.findIndex(b => b().id === targetId);
-      const listaAtualizada = [...current];
-      const [removed] = listaAtualizada.splice(draggedIdx, 1);
-      listaAtualizada.splice(targetIdx, 0, removed);
+    this.service.reposicionar(idAlvo, idAncora)
+    .subscribe({
+      next: (resultado) => {},
+      error: (erro) => {
+        // Em caso de erro, reverte para o estado anterior
+        this.blocos.set(estadoAnterior);
+        alert('Erro ao salvar posição. Revertendo...');
+      }
+    })
+
+    this.blocos.update(atual => {
+      const idxAlvo = atual.findIndex(b => b().id === idAlvo);
+      const idxAncora = atual.findIndex(b => b().id === idAncora);
+      if (idxAlvo === -1 || idxAncora === -1) return atual;
+      const listaAtualizada = [...atual];
+      const [removido] = listaAtualizada.splice(idxAlvo, 1);
+      const novoIdxInsercao = idxAlvo < idxAncora ? idxAncora - 1 : idxAncora;
+      listaAtualizada.splice(novoIdxInsercao, 0, removido);
       return listaAtualizada;
     });
     this.aoFinalizarArrasto();

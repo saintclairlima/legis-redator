@@ -26,4 +26,10 @@ export class ElementoService {
     return this.apiService.delete(`${this.endpoint}/${id}`);  
   }
 
+  reposicionar(idElementoAlvo: number, idElementoAncora: number) {
+    return this.apiService.patch(
+      `${this.endpoint}/reposicionar/${idElementoAlvo}`,
+      {idElementoAncorador: idElementoAncora}
+    );
+  }
 }

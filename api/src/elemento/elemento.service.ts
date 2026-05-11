@@ -150,6 +150,48 @@ export class ElementoService {
     return this.elementoRepo.save(elemento);
   }
 
+  async reposicionar(
+    idAlvo: number, 
+    idAncora: number, 
+    idUsuario: number
+  ): Promise<ElementoEntity> {
+    return this.dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(ElementoEntity);
+      
+      const alvo = await repo.findOneBy({ id: idAlvo });
+      const ancora = await repo.findOneBy({ id: idAncora });
+
+      if (!alvo || !ancora) {
+        throw new NotFoundException('Um ou ambos os elementos não foram encontrados.');
+      }
+
+      if (alvo.id === ancora.id) {
+        return alvo;
+      }
+      
+      const anteriorAlvo = await repo.findOneBy({ idElementoSeguinte: alvo.id });
+      const anteriorAncora = await repo.findOneBy({ idElementoSeguinte: ancora.id });
+      const proximoAlvo = alvo.idElementoSeguinte;
+
+      alvo.idElementoSeguinte = null;
+      await repo.save(alvo);
+
+      if (anteriorAlvo) {
+        anteriorAlvo.idElementoSeguinte = proximoAlvo;
+        await repo.save(anteriorAlvo);
+      }
+
+      if (anteriorAncora) {
+        anteriorAncora.idElementoSeguinte = alvo.id;
+        await repo.save(anteriorAncora);
+      }
+
+      alvo.idElementoSeguinte = ancora.id;
+
+      return repo.save(alvo);
+    });
+  }
+
   async remove(idElemento: number, idUsuario: number): Promise<ElementoEntity> {
     return await this.dataSource.transaction(
       async (transactionalEntityManager) => {
