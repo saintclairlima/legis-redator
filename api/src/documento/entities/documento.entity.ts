@@ -28,7 +28,7 @@ export class DocumentoEntity extends EntidadeBaseAuditavel {
   @JoinColumn({ name: 'idSituacaoDocumento', foreignKeyConstraintName: 'Documento_SituacaoDocumento_FK' })
   situacao: SituacaoDocumentoEntity;
 
-  @OneToMany(() => ElementoEntity, elemento => elemento.documento)
+  @OneToMany(() => ElementoEntity, elemento => elemento.documento, { cascade: true })
   elementos: ElementoEntity[];
 
   @OneToMany(() => PermissaoDocumentoEntity, p => p.documento)

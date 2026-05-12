@@ -4,9 +4,17 @@
       <h1>Meus Documentos</h1>
       <p>Gerenciamento dos documentos</p>
     </div>
-    <button class="btn-primary" (click)="novoDocumento()">
-      + Novo Documento
-    </button>
+    <div class="flex items-center gap-4">
+      @if(criandoNovoDocumento()) {
+        <mat-spinner diameter="38"/>
+      }
+      <button
+        class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400"
+        (click)="novoDocumento()"
+        [disabled]="criandoNovoDocumento()">
+          + Novo Documento
+      </button>
+    </div>
   </header>
 
     <section class="filtros">
@@ -31,46 +39,51 @@
     </form>
   </section>
 
-    <!-- Grid de Documentos  -->
-  <div class="document-grid">
-    @for (doc of documentos(); track doc.id) {
-      <div class="doc-card">
-        <div class="doc-header">
-          <span class="doc-id">{{ doc.numero }}/{{ doc.ano }}</span>
-          <span [class]="'status-badge ' + doc.situacao.rotulo.toLowerCase()">
-            {{ doc.situacao.rotulo }}
-          </span>
-        </div>
-
-        <div class="doc-content">
-          <h3>{{ doc.rotulo }}</h3>
-          <p>{{ doc.descricao || 'Sem descrição informada.' }}</p>
-        </div>
-
-        <div class="doc-footer">
-          <div class="doc-info">
+  <!-- Grid de Documentos  -->
+  @if(!carregandoDocumentos()){
+    <div class="document-grid">
+      @for (doc of documentos(); track doc.id) {
+        <div class="doc-card">
+          <div class="doc-header">
+            <span class="doc-id">{{ doc.numero }}/{{ doc.ano }}</span>
+            <span [class]="'status-badge ' + doc.situacao.rotulo.toLowerCase()">
+              {{ doc.situacao.rotulo }}
+            </span>
           </div>
-          <div class="actions">
-            <button class="btn-icon" (click)="editar(doc.id)" title="Editar"><mat-icon>edit</mat-icon></button>
-            <button class="btn-icon" (click)="visualizar(doc.id)" title="Visualizar"><mat-icon>visibility</mat-icon></button>
+
+          <div class="doc-content">
+            <h3>{{ doc.rotulo }}</h3>
+            <p>{{ doc.descricao || 'Sem descrição informada.' }}</p>
+          </div>
+
+          <div class="doc-footer">
+            <div class="doc-info">
+            </div>
+            <div class="actions">
+              <button class="btn-icon" (click)="editar(doc.id)" title="Editar"><mat-icon>edit</mat-icon></button>
+              <button class="btn-icon" (click)="visualizar(doc.id)" title="Visualizar"><mat-icon>visibility</mat-icon></button>
+              <button class="btn-icon text-red-500 hover:text-red-700" (click)="deletar(doc.id)" title="Deletar"><mat-icon>delete</mat-icon></button>
+            </div>
           </div>
         </div>
-      </div>
-    } @empty {
-      <div class="empty-state">
-        <p>Nenhum documento encontrado.</p>
-      </div>
-    }
-  </div>
+      } @empty {
+        <div class="empty-state">
+          <p>Nenhum documento encontrado.</p>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="flex items-center justify-center p-10 m-10">
+      <mat-spinner/>
+    </div>
+  }
 
   <!-- paginator -->
   <mat-paginator
     [length]="total()"
     [pageSize]="size()"
     [pageIndex]="page()"
-    [pageSizeOptions]="[5, 10, 20]"
-  >
-  </mat-paginator>
+    [pageSizeOptions]="[5, 10, 20]"/>
 
 
 </div>

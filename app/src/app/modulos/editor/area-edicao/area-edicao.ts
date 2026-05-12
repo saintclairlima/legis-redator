@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectionStrategy, model, ElementRef, QueryList, ViewChildren, WritableSignal, input, effect } from '@angular/core';
+import { Component, signal, model, ElementRef, QueryList, ViewChildren, WritableSignal, input, effect } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { DadosBlocoEmFoco } from '../types';
@@ -30,7 +30,6 @@ export class AreaEdicao {
   idBlocoSobreposto = signal<number | null>(null);
 
   constructor(private service: ElementoService){
-
     effect(() => {
       const id = this.idDocumento();
       if (id) {
@@ -38,12 +37,29 @@ export class AreaEdicao {
           if (elementos.length) {
             this.blocos.set(elementos.map(e => signal(e)));
             this.focarBloco(elementos[0].id);
+          } else {
+            // Caso seja um documento sem elementos, criar um elemento vazio
+            const idElementoPai = undefined
+
+            const novoElemento: DtoCriacaoElemento = {
+              idElementoAnterior: null,
+              texto: '',
+              idTipoElemento: getTipoElemento(RotuloTipoElemento.ARTIGO).id,
+              idSituacaoElemento: getSituacaoElemento(RotuloSituacaoElemento.Rascunho).id,
+              idDocumento: this.idDocumento(),
+              idElementoSeguinte: undefined,
+              idElementoPai: idElementoPai ?? undefined,
+            }
+            
+            this.service.criar(novoElemento).subscribe(elementoCriado => {
+              const novoSignal = signal(elementoCriado);
+              this.blocos.set([novoSignal]);              
+              this.focarBloco(elementoCriado.id, true, false);
+            });
           }
         });
       }
-
-     })
-    
+     })    
   }
 
   aoIniciarArrasto(evento: DragEvent, id: number) {
@@ -73,6 +89,7 @@ export class AreaEdicao {
       next: (resultado) => {},
       error: (erro) => {
         // Em caso de erro, reverte para o estado anterior
+        // AFAZER: Implementar uma forma mais elegante de informar ao usuário
         this.blocos.set(estadoAnterior);
         alert('Erro ao salvar posição. Revertendo...');
       }
@@ -158,7 +175,10 @@ export class AreaEdicao {
             return nova;
           });
         },
-        error: (erro) => {}
+        error: (erro) => {
+          // AFAZER: tratar erro
+          console.error(erro);
+        }
       });
     }
 

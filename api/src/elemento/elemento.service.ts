@@ -19,9 +19,9 @@ export class ElementoService {
 
   async create(createElementoDto: CreateElementoDto): Promise<ElementoEntity> {
     return await this.dataSource.transaction(
-      async (transactionalEntityManager) => {
+      async (manager) => {
         // Obter o repository ligado a ESTA transação específica
-        const repoTransacao = transactionalEntityManager.getRepository(ElementoEntity);
+        const repoTransacao = manager.getRepository(ElementoEntity);
 
         try {
           let proximoId: number;
@@ -194,8 +194,8 @@ export class ElementoService {
 
   async remove(idElemento: number, idUsuario: number): Promise<ElementoEntity> {
     return await this.dataSource.transaction(
-      async (transactionalEntityManager) => {
-        const repoTransacao = transactionalEntityManager.getRepository(ElementoEntity);
+      async (manager) => {
+        const repoTransacao = manager.getRepository(ElementoEntity);
 
         const elemento = await repoTransacao.findOneBy({ id: idElemento });
         if (!elemento) {

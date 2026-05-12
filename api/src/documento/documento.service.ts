@@ -3,16 +3,18 @@ import { CreateDocumentoDto } from './dto/create-documento.dto';
 import { UpdateDocumentoDto } from './dto/update-documento.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DocumentoEntity } from './entities/documento.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
 import { DocumentoQueryDto } from './dto/listar-documento.dto';
 import { ListaDtoResposta } from 'src/entidade-base/lista.dto';
 import { Like } from 'typeorm';
+import { ElementoEntity } from 'src/elemento/entities/elemento.entity';
 
 @Injectable()
 export class DocumentoService {
   constructor(
     @InjectRepository(DocumentoEntity)
     private documentoRepo: Repository<DocumentoEntity>,
+    private dataSource: DataSource,
   ) {}
 
   create(createDocumentoDto: CreateDocumentoDto): Promise<DocumentoEntity> {
@@ -96,9 +98,18 @@ export class DocumentoService {
   }
 
   async remove(id: number, idUsuario: number): Promise<DocumentoEntity> {
-    const documento = await this.findOne(id);
-    documento.idUsuarioExclusao = idUsuario;
-    await this.documentoRepo.save(documento);
-    return this.documentoRepo.softRemove(documento);
+    return this.dataSource.transaction(
+      async (manager) => {
+        const documento = await manager.findOneOrFail(DocumentoEntity, { where: { id } });
+
+        documento.idUsuarioExclusao = idUsuario;
+        await manager.save(documento);
+
+        await manager.update(ElementoEntity, { idDocumento: id }, { idUsuarioExclusao: idUsuario });
+        await manager.softDelete(ElementoEntity, { idDocumento: id });
+
+        return manager.softRemove(documento);
+      }
+    );
   }
 }
