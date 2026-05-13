@@ -9,7 +9,7 @@ export class AutenticacaoInterceptor implements HttpInterceptor {
     constructor(private jwtService: JwtService, private sessaoService: SessaoService){}
     
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-        if (this.jwtService.possuiToken()) {
+        if (this.jwtService.usuarioAutenticado()) {
             const token = this.jwtService.recuperarToken();
             request = request.clone({ setHeaders: { Authorization: `Bearer ${token}` }});
         }

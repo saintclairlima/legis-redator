@@ -18,7 +18,15 @@
           <input type="password" matInput formControlName="senha">
         </mat-form-field>
 
-        <button matButton="filled" type="submit" (click)="fazerLogin()">Entrar</button>
+        <button
+          matButton="filled" type="submit"
+          [disabled]="realizandoLogin()">
+          @if (realizandoLogin()) {
+            <mat-spinner diameter="22"/>
+          } @else {
+            Entrar
+          }
+        </button>
       </form>
 
       <div class="flex justify-center pt-5 mb-5">

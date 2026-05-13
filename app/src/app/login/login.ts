@@ -3,31 +3,35 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { cpfValidator } from '../validators/cpf.validator';
-
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { cpfValidator } from '../validators/cpf.validator';
 import { MensagemDetalhes } from '../componentes/mensagem-detalhes/mensagem-detalhes';
 import { AutenticacaoService } from '../services/autenticacao.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatToolbarModule, MensagemDetalhes, ReactiveFormsModule],
+  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatToolbarModule, MensagemDetalhes, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
-    form = new FormGroup({
-      cpf: new FormControl('', {validators: [Validators.required, cpfValidator], nonNullable: true}),
-      senha: new FormControl('', {validators: [Validators.required], nonNullable: true}),
-    });
+
+  exibirMensagemEsqueceuSenha = signal<boolean>(false);
+  realizandoLogin = signal<boolean>(false);
+
+  form = new FormGroup({
+    cpf: new FormControl('', {validators: [Validators.required, cpfValidator], nonNullable: true}),
+    senha: new FormControl('', {validators: [Validators.required], nonNullable: true}),
+  });
 
   constructor(
     private autenticacaoService: AutenticacaoService,
     private router: Router
   ){ }
-
-  exibirMensagemEsqueceuSenha = signal<boolean>(false);
 
   toggleExibirMensagemEsqueceuSenha() {
     this.exibirMensagemEsqueceuSenha.update(valor => !valor);
@@ -37,7 +41,15 @@ export class Login {
     if (this.form.valid) {
       const cpf = this.form.controls.cpf.value;
       const senha = this.form.controls.senha.value;
+
+      this.realizandoLogin.set(true);
+      this.form.disable();
       this.autenticacaoService.login(cpf, senha)
+      .pipe(finalize(
+        ()=> {
+          this.realizandoLogin.set(false);
+          this.form.enable();
+        }))
       .subscribe({
         next: (res) => {
           this.router.navigate(['inicio']);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { jwtDecode } from 'jwt-decode'; 
+import { jwtDecode, JwtPayload } from 'jwt-decode'; 
 
 @Injectable({ providedIn: 'root' })
 export class JwtService {
@@ -24,5 +24,24 @@ export class JwtService {
 
   salvarToken(token: string): void {
     sessionStorage.setItem('token-jwt-legis-redator', token);
+  }
+
+  tokenExpirado(): boolean {
+    const token = this.recuperarToken();
+    if (!token) return true;
+
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      if (!decoded.exp) return true;
+
+      const dataExpiracao = decoded.exp * 1000;
+      return Date.now() > dataExpiracao;
+    } catch {
+      return true;
+    }
+  }
+
+  usuarioAutenticado(): boolean {
+    return this.possuiToken() && !this.tokenExpirado();
   }
 }
