@@ -6,7 +6,7 @@ export class JwtService {
   constructor() {}
 
   apagarToken() {
-    sessionStorage.removeItem('token-jwt-legis-redator');
+    localStorage.removeItem('token-jwt-legis-redator');
   }
 
   decodificatJWT(token: string): any {
@@ -15,15 +15,15 @@ export class JwtService {
   }
 
   possuiToken() {
-    return !!sessionStorage.getItem('token-jwt-legis-redator');;
+    return !!localStorage.getItem('token-jwt-legis-redator');;
   }
 
   recuperarToken(): string | null {
-    return sessionStorage.getItem('token-jwt-legis-redator');
+    return localStorage.getItem('token-jwt-legis-redator');
   }
 
   salvarToken(token: string): void {
-    sessionStorage.setItem('token-jwt-legis-redator', token);
+    localStorage.setItem('token-jwt-legis-redator', token);
   }
 
   tokenExpirado(): boolean {
