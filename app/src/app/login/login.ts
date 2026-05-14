@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -14,7 +15,16 @@ import { AutenticacaoService } from '../services/autenticacao.service';
 
 @Component({
   selector: 'app-login',
-  imports: [MatButtonModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatToolbarModule, MensagemDetalhes, ReactiveFormsModule],
+  imports: [
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatToolbarModule,
+    MensagemDetalhes,
+    ReactiveFormsModule
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -30,6 +40,7 @@ export class Login {
 
   constructor(
     private autenticacaoService: AutenticacaoService,
+    private snackBar: MatSnackBar,
     private router: Router
   ){ }
 
@@ -55,6 +66,11 @@ export class Login {
           this.router.navigate(['inicio']);
         },
         error: (erro) => {
+          if (erro.status === 401) {
+            this.snackBar.open('CPF ou senha inválidos.', 'Fechar', { duration: 4000 });
+            return;
+          }
+          this.snackBar.open('Não foi possível realizar o login. Tente novamente.', 'Fechar', { duration: 4000 });
           console.error('Ocorreu um erro ao fazer login.', erro)
         }
       });
