@@ -1,6 +1,5 @@
 import { Component, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { TipoBloco } from '../../types';
 import { TipoElemento, tiposElemento } from '../../../../entidades/elemento.model';
 
 @Component({

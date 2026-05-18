@@ -42,20 +42,22 @@ export const getTipoElemento = (rotulo: RotuloTipoElemento) => {
 }
 
 export const tiposElemento = [
-  { id: 14, rotulo: RotuloTipoElemento.Epigrafe },
-  { id: 13, rotulo: RotuloTipoElemento.Ementa },
-  { id: 12, rotulo: RotuloTipoElemento.Preambulo },
-  { id: 11, rotulo: RotuloTipoElemento.Parte },
-  { id: 10, rotulo: RotuloTipoElemento.Livro },
-  { id: 9, rotulo: RotuloTipoElemento.TITULO },
-  { id: 8, rotulo: RotuloTipoElemento.CAPITULO },
-  { id: 7, rotulo: RotuloTipoElemento.Secao },
-  { id: 6, rotulo: RotuloTipoElemento.Subsecao },
   { id: 5, rotulo: RotuloTipoElemento.ARTIGO },
   { id: 4, rotulo: RotuloTipoElemento.Paragrafo },
   { id: 3, rotulo: RotuloTipoElemento.INCISO },
   { id: 2, rotulo: RotuloTipoElemento.ALINEA },
-  { id: 1, rotulo: RotuloTipoElemento.Item }
+  { id: 1, rotulo: RotuloTipoElemento.Item },
+  // --------------------------------------------
+  { id: 9, rotulo: RotuloTipoElemento.TITULO },
+  { id: 8, rotulo: RotuloTipoElemento.CAPITULO },
+  { id: 7, rotulo: RotuloTipoElemento.Secao },
+  { id: 6, rotulo: RotuloTipoElemento.Subsecao },
+  // --------------------------------------------
+  { id: 14, rotulo: RotuloTipoElemento.Epigrafe },
+  { id: 12, rotulo: RotuloTipoElemento.Preambulo },
+  { id: 13, rotulo: RotuloTipoElemento.Ementa },
+  { id: 11, rotulo: RotuloTipoElemento.Parte },
+  { id: 10, rotulo: RotuloTipoElemento.Livro },
 ];
 
 export type DtoCriacaoElemento = Partial<Elemento> & {

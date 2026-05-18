@@ -1,14 +1,15 @@
 <!-- Backdrop transparente para fechar ao clicar fora -->
 <div class="overlay-menu fixed inset-0" (click)="fechar.emit()"></div>
 
-<div
-  class="caixa-menu bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col">
+<!-- AFAZER: definir melhor maneira de altura máxima -->
+<div class="caixa-menu bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col py-4 max-h-[28vh] overflow-y-auto">
   <div class="px-3 py-1 mb-1 text-xs text-gray-400 font-semibold uppercase tracking-wider">Tipos de Elementos</div>
 
   @for(tipo of tiposElemento; track tipo.id) {
     <button class="opcao-menu-editor"
       (click)="selecionarTipo(tipo)">
-      <mat-icon class="scale-75 text-gray-500">notes</mat-icon> {{ tipo.rotulo }}
+      <!-- <mat-icon class="scale-75 text-gray-500">notes</mat-icon> -->
+      {{ tipo.rotulo }}
     </button>
   }
 
