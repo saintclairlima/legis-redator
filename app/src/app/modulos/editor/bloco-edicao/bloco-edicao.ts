@@ -7,6 +7,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { AcaoOpcaoMenu, DadosBlocoEmFoco, TipoMenu } from '../types';
 import { ApiIaService } from '../../../services/api-ia.service';
+import { BlocoReferencias } from '../bloco-referencias/bloco-referencias';
 import { Elemento, RotuloTipoElemento, TipoElemento } from '../../../entidades/elemento.model';
 import { ElementoService } from '../../../services/http/elemento.service';
 import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
@@ -15,7 +16,7 @@ import { MenuTipos } from '../menus/menu-tipos/menu-tipos';
 
 @Component({
   selector: 'app-bloco-edicao',
-  imports: [CommonModule, MatIconModule, MenuAcoes, MenuEstilo, MenuTipos],
+  imports: [ BlocoReferencias, CommonModule, MatIconModule, MenuAcoes, MenuEstilo, MenuTipos],
   templateUrl: './bloco-edicao.html',
   //Permite acessar classes css internas de bibliotecas utilizadas (ex: tiptap)
   encapsulation: ViewEncapsulation.None,
@@ -32,7 +33,6 @@ export class BlocoEdicao {
 
   dados = computed(() => this.dadosSignal()());
   tipoMenuAberto = signal<TipoMenu | null>(null);
-  referenciasAbertas = signal<boolean>(false);
   posicaoMenuEstilo = signal({ top: 0, left: 0 });
   
   elementoEditavel = viewChild.required<ElementRef<HTMLDivElement>>('elementoEditavel');
@@ -182,9 +182,11 @@ export class BlocoEdicao {
     this.iaService.getReferencias(this.dados().texto!)
     .subscribe({
       next: (resposta) => {
-        const dadosAtuais = this.dados();
-        dadosAtuais.referencias = resposta;
-        this.aoAlterarDadosBloco.emit(dadosAtuais);
+        const dadosAtualizados = {
+          ...this.dados(),
+          referencias: resposta,
+        };
+        this.aoAlterarDadosBloco.emit(dadosAtualizados);
       },
       error: (erro) => console.error(erro),
     });
@@ -228,10 +230,6 @@ export class BlocoEdicao {
 
   toggleMenu(tipoMenu: TipoMenu) {
     this.tipoMenuAberto.update(tipoAtual => tipoAtual === tipoMenu ? null : tipoMenu);
-  }
-
-  toggleReferencias() {
-    this.referenciasAbertas.update(valorAtual => !valorAtual);
   }
 
   @HostListener('document:selectionchange')
