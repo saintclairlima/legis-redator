@@ -98,7 +98,7 @@ export class Elemento {
   elementoPai?: Elemento;
   filhos?: Elemento[];
   idElementoSeguinte?: number;
-  proximoElemento?: Elemento;
+  elementoSeguinte?: Elemento;
   idSituacaoElemento?: number;
   situacaoElemento: SituacaoElemento;
   referencias?: Referencia[];

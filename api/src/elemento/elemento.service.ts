@@ -59,7 +59,7 @@ export class ElementoService {
             relations: {
               tipoElemento: true,
               situacaoElemento: true,
-              proximoElemento: true,
+              elementoSeguinte: true,
               referencias: true,
               anotacoes: true
             },
@@ -80,7 +80,7 @@ export class ElementoService {
         situacaoElemento: true,
         usuarioCriacao: { pessoa: true },
         usuarioAlteracao: { pessoa: true },
-        proximoElemento: true,
+        elementoSeguinte: true,
         anotacoes: true,
         referencias: true,
       },
@@ -113,7 +113,7 @@ export class ElementoService {
       relations: {
         tipoElemento: true,
         situacaoElemento: true,
-        proximoElemento: true,
+        elementoSeguinte: true,
         referencias: true,
         anotacoes: true
       },

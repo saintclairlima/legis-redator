@@ -29,7 +29,7 @@ export class ElementoService {
   reposicionar(idElementoAlvo: number, idElementoAncora: number) {
     return this.apiService.patch(
       `${this.endpoint}/reposicionar/${idElementoAlvo}`,
-      {idElementoAncorador: idElementoAncora}
+      {idElementoAncora: idElementoAncora}
     );
   }
 }
