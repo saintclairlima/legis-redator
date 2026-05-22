@@ -1,6 +1,12 @@
 @import 'tailwindcss';
 @import './variaveis.css';
 
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
 .link {
   color: rgb(21, 93, 252);
   cursor: pointer;

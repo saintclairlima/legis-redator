@@ -1,0 +1,40 @@
+input, textarea {
+  box-sizing: border-box;
+}
+
+.campo-edicao:focus {
+   box-shadow: 0 0 0 2px rgba(46,170,220,0.2);
+}
+
+.campo-visualizacao {
+
+  border-radius: 6px;
+
+  transition:
+    background-color 120ms ease;
+}
+
+.campo-visualizacao:hover {
+
+  background: rgba(0,0,0,0.04);
+}
+
+.campo-edicao {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: white;
+
+  box-shadow:
+    0 0 0 1px #d0d7de,
+    0 1px 2px rgba(0,0,0,0.04);
+
+  outline: none;
+  font: inherit;
+  resize: vertical;
+}
+
+textarea.campo-edicao {
+  min-height: 100px;
+}

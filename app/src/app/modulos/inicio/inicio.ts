@@ -165,10 +165,11 @@ export class Inicio{
   gerarDadosDocumentoVazio(): Partial<Documento> {
     const situacaoDocumentoPadrao = getSituacaoDocumento(RotuloSituacaoDocumento.Rascunho);
     return {
-      numero: 0,
-      ano: 2020,
+      numero: 99999,
+      ano: new Date().getFullYear(),
       rotulo: 'Documento sem Título',
-      situacao: situacaoDocumentoPadrao
+      idSituacaoDocumento: situacaoDocumentoPadrao.id,
+      descricao: 'Documento recém criado sem conteúdo de descrição'
     }
   }
 }

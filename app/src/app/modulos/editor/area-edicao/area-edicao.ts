@@ -1,10 +1,10 @@
-import { Component, signal, model, ElementRef, QueryList, ViewChildren, WritableSignal, input, effect } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { DadosBlocoEmFoco } from '../types';
-import { BlocoEdicao } from '../bloco-edicao/bloco-edicao';
-import { Elemento, RotuloTipoElemento, TipoElemento, DtoCriacaoElemento, SituacaoElemento, RotuloSituacaoElemento, getTipoElemento, getSituacaoElemento } from '../../../entidades/elemento.model';
+import { Component, ElementRef, QueryList, ViewChildren, WritableSignal, effect, input, model, signal } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { DtoCriacaoElemento, Elemento, RotuloSituacaoElemento, RotuloTipoElemento, getSituacaoElemento, getTipoElemento } from '../../../entidades/elemento.model';
 import { ElementoService } from '../../../services/http/elemento.service';
+import { BlocoEdicao } from '../bloco-edicao/bloco-edicao';
+import { DadosBlocoEmFoco } from '../types';
 
 @Component({
   selector: 'app-area-edicao',
@@ -162,33 +162,46 @@ export class AreaEdicao {
     
     if (indiceRemover === -1) return;
 
-    // Se houver somente um bloco, não remove, apenas seta ele para ficar vazio
-    if (this.blocos().length === 1) {
-      this.blocos()[0].set(this.gerarDadosBlocoVazio());
-    } else {
-      this.service.deletar(idBloco)
-      .subscribe({
-        next: () => {
-          this.blocos.update(lista => {
-            const nova = [...lista];
-            nova.splice(indiceRemover, 1);
-            return nova;
+    this.service.deletar(idBloco)
+    .subscribe({
+      next: () => {
+        this.blocos.update(lista => {
+          const nova = [...lista];
+          nova.splice(indiceRemover, 1);
+          return nova;
+        });
+
+        if (this.blocos().length === 0) {
+          const novoElemento: DtoCriacaoElemento = {
+            idElementoAnterior: null,
+            idDocumento: this.idDocumento(),
+            idTipoElemento: getTipoElemento(RotuloTipoElemento.ARTIGO).id,
+            texto: '',
+            idSituacaoElemento: getSituacaoElemento(RotuloSituacaoElemento.Rascunho).id,
+          };
+
+          this.service.criar(novoElemento)
+          .subscribe(elementoCriado => {
+            const novoSignal = signal(elementoCriado);
+            this.blocos.set([novoSignal]);
+            this.focarBloco(elementoCriado.id, true, false);
           });
-        },
-        error: (erro) => {
-          // AFAZER: tratar erro
-          console.error(erro);
+
+        } else {
+          const proximoIndice = Math.max(0, indiceRemover - 1);
+          const blocoFoco = this.blocos()[proximoIndice];
+
+          if (blocoFoco) {
+            this.focarBloco(blocoFoco().id, true, false);
+          }
+          this.focarBloco(this.blocos()[proximoIndice]().id, true, false);
         }
-      });
-    }
-
-    const proximoIndice = Math.max(0, indiceRemover - 1);
-    this.focarBloco(this.blocos()[proximoIndice]().id, true, false);
-  }
-
-  gerarDadosBlocoVazio(): Elemento {
-    const tipoElementoPadrao: TipoElemento = getTipoElemento(RotuloTipoElemento.ARTIGO);
-    const situacaoElementoPadrao: SituacaoElemento = getSituacaoElemento(RotuloSituacaoElemento.Rascunho);
-    return { id: 0, tipoElemento: tipoElementoPadrao, texto: '', situacaoElemento: situacaoElementoPadrao };
+        
+      },
+      error: (erro) => {
+        // AFAZER: tratar erro
+        console.error(erro);
+      }
+    });
   }
 }

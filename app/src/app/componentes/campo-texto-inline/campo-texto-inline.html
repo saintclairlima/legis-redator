@@ -1,0 +1,19 @@
+@if(!editando()) {
+  <div class="campo-visualizacao" (click)="iniciarEdicao()">{{ valor() || 'Clique para editar' }}</div>
+} @else {
+  @if(multilinha()) {
+    <textarea
+      #inputRef
+      class="campo-edicao"
+      [value]="valor()"
+      (input)="valorChange.emit(($any($event.target)).value)"
+      (blur)="finalizarEdicao()"></textarea>
+  } @else {
+    <input
+      #inputRef
+      class="campo-edicao"
+      [value]="valor()"
+      (input)="valorChange.emit(($any($event.target)).value)"
+      (blur)="finalizarEdicao()"/>
+  }
+} 

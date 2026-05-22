@@ -1,0 +1,12 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.layout-principal {
+  margin-top: 64px; /* altura do mat-toolbar */
+  height: calc(100vh - 64px);
+}

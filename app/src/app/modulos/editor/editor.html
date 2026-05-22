@@ -1,7 +1,60 @@
-<div class="flex">
-    <div class="flex m-auto">
+<div class="editor-layout">
+    <aside class="sidebar">
+        <div class="flex items-center justify-between mb-4">
+            <button class="botao-voltar" (click)="voltarPaginaInicial()">
+                <mat-icon>arrow_back</mat-icon>
+                <span>Voltar</span>
+            </button>
+            <div class="flex items-center gap-2 text-slate-500 min-w-[120px] justify-end whitespace-nowrap">
+                @if(statusSalvamento() === 'salvando') {
+                    <div class="flex items-center gap-1.5 animate-pulse">
+                        <span class="text-xs">Salvando...</span>
+                        <mat-spinner diameter="20"/>
+                    </div>
+                }
+
+                @if(statusSalvamento() === 'salvo') {
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs">Salvo</span>
+                        <mat-icon class="indicador-salvamento sucesso">check_circle</mat-icon>
+                    </div>
+                }
+
+                @if(statusSalvamento() === 'erro') {
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs">Erro</span>
+                        <mat-icon class="indicador-salvamento falha">cancel</mat-icon>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="grupo-documento">
+            <app-campo-texto-inline
+                class="campo-titulo"
+                [valor]="documento()?.rotulo || ''"
+                (valorChange)="atualizarCampo('rotulo', $event)"/>
+            <div class="linha-meta">
+                <app-campo-texto-inline
+                    class="campo-meta"
+                    [valor]="'' + documento()?.numero || ''"
+                    (valorChange)="atualizarCampo('numero', $event)"/>
+                <span class="separador">/</span>
+                <app-campo-texto-inline
+                    class="campo-meta"
+                    [valor]="'' + documento()?.ano || ''"
+                    (valorChange)="atualizarCampo('ano', $event)"/>
+            </div>
+            <app-campo-texto-inline
+                class="campo-descricao"
+                [valor]="documento()?.descricao || ''"
+                (valorChange)="atualizarCampo('descricao', $event)"
+                [multilinha]="true"/>
+        </div>
+    </aside>
+    
+    <section class="editor-scroll">
         @if(id()) {
             <app-area-edicao [idDocumento]="id()!" class="mt-3"/>
         }
-    </div>
+    </section>
 </div>

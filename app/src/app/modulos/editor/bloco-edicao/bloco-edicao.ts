@@ -129,8 +129,8 @@ export class BlocoEdicao {
   }
 
   alterarTipoBloco(novoTipo: TipoElemento) {
-    const blocoAtualizado = { id: this.dados().id, tipoElemento: novoTipo };
-    this.elementoService.atualizar(blocoAtualizado.id, blocoAtualizado).subscribe(dadosAtualizados => { 
+    const blocoAtualizado = { idTipoElemento: novoTipo.id };
+    this.elementoService.atualizar(this.dados().id, blocoAtualizado).subscribe(dadosAtualizados => { 
       this.aoAlterarDadosBloco.emit(dadosAtualizados);
       this.editorTipTap.setOptions({
         editorProps: {

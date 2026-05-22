@@ -3,11 +3,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateElementoDto } from './dto/create-elemento.dto';
 import { UpdateElementoDto } from './dto/update-elemento.dto';
 import { ElementoEntity } from './entities/elemento.entity';
-import { DataSource, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ElementoService {
@@ -88,7 +88,6 @@ export class ElementoService {
   }
 
   ordenarElementos(elementos: ElementoEntity[]): ElementoEntity[] {
-    // AFAZER: Verificar a lógica de ordenação
     if (!elementos.length) return [];
 
     const mapa = new Map(elementos.map(e => [e.id, e]));
@@ -122,19 +121,21 @@ export class ElementoService {
     return this.ordenarElementos(elementos);
   }
 
-  async findOne(id: number): Promise<ElementoEntity> {
+  async findOne(id: number, incluirRelations: boolean=true): Promise<ElementoEntity> {
     try {
       return await this.elementoRepo.findOneOrFail({
         where: { id },
-        relations: {
-          tipoElemento: true,
-          situacaoElemento: true,
-          usuarioCriacao: { pessoa: true },
-          usuarioAlteracao: { pessoa: true },
-          proximoElemento: true,
-          anotacoes: true,
-          referencias: true,
-        },
+        relations: incluirRelations
+        ? {
+            tipoElemento: true,
+            situacaoElemento: true,
+            usuarioCriacao: { pessoa: true },
+            usuarioAlteracao: { pessoa: true },
+            elementoSeguinte: true,
+            anotacoes: true,
+            referencias: true,
+          }
+        : undefined,
       });
     } catch {
       throw new NotFoundException(`Elemento ${id} não encontrado`);
@@ -145,9 +146,14 @@ export class ElementoService {
     id: number,
     updateElementoDto: UpdateElementoDto,
   ): Promise<ElementoEntity> {
-    const elemento = await this.findOne(id);
-    Object.assign(elemento, updateElementoDto);
-    return this.elementoRepo.save(elemento);
+    const dadosParaAtualizar: Partial<ElementoEntity> = { ...updateElementoDto };
+    const resultado = await this.elementoRepo.update(id, dadosParaAtualizar);
+    
+    if (resultado.affected === 0) {
+      throw new NotFoundException(`Elemento ${id} não encontrado`);
+    }
+
+    return this.findOne(id);
   }
 
   async reposicionar(
@@ -178,16 +184,18 @@ export class ElementoService {
 
       if (anteriorAlvo) {
         anteriorAlvo.idElementoSeguinte = proximoAlvo;
+        anteriorAlvo.idUsuarioAlteracao = idUsuario;
         await repo.save(anteriorAlvo);
       }
 
       if (anteriorAncora) {
         anteriorAncora.idElementoSeguinte = alvo.id;
+        anteriorAncora.idUsuarioAlteracao = idUsuario;
         await repo.save(anteriorAncora);
       }
 
       alvo.idElementoSeguinte = ancora.id;
-
+      alvo.idUsuarioAlteracao = idUsuario;
       return repo.save(alvo);
     });
   }
