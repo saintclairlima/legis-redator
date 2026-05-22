@@ -2,7 +2,6 @@ import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray } from 'class-valid
 
 export class CreateElementoDto {
   @IsString()
-  @IsNotEmpty({ message: 'O texto do elemento é obrigatório' })
   texto: string;
 
   @IsNumber()
@@ -18,8 +17,8 @@ export class CreateElementoDto {
   idElementoSeguinte?: number;
 
   @IsNumber()
-  @IsNotEmpty({ message: 'O ID do usuário criador é obrigatório' })
-  idUsuarioCriacao: number;
+  @IsOptional()
+  idUsuarioCriacao?: number;
 
   @IsNumber()
   @IsNotEmpty({ message: 'O ID do documento é obrigatório' })

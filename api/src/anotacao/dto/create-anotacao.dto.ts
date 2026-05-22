@@ -10,8 +10,8 @@ export class CreateAnotacaoDto {
   idAnotacaoSeguinte?: number;
 
   @IsNumber()
-  @IsNotEmpty({ message: 'O ID do usuário de criação da anotação não pode estar vazio' })
-  idUsuarioCriacao: number;
+  @IsOptional()
+  idUsuarioCriacao?: number;
 
   @IsNumber()
   @IsNotEmpty({ message: 'É necessário informar o ID do elemento relacionado' })

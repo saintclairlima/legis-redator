@@ -13,29 +13,4 @@ export class AutenticacaoController {
   login(@Body() autenticacaoDto: AutenticacaoDto) {
     return this.autenticacaoService.login(autenticacaoDto);
   }
-
-  // @Post()
-  // create(@Body() createAutenticacaoDto: CreateAutenticacaoDto) {
-  //   return this.autenticacaoService.create(createAutenticacaoDto);
-  // }
-
-  // @Get()
-  // findAll() {
-  //   return this.autenticacaoService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.autenticacaoService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAutenticacaoDto: UpdateAutenticacaoDto) {
-  //   return this.autenticacaoService.update(+id, updateAutenticacaoDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.autenticacaoService.remove(+id);
-  // }
 }

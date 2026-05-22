@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, IsOptional, IsNumber, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 export class CreateDocumentoDto {
   @IsNumber()
@@ -21,8 +21,8 @@ export class CreateDocumentoDto {
   descricao?: string;
 
   @IsNumber()
-  @IsNotEmpty({ message: 'O ID do usuário criador é necessário' })
-  idUsuarioCriacao: number;
+  @IsOptional()
+  idUsuarioCriacao?: number;
 
   @IsNumber()
   @IsNotEmpty({ message: 'É necessário informar a situação do documento' })
