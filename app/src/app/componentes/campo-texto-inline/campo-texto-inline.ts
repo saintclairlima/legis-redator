@@ -1,4 +1,4 @@
-import { afterNextRender, Component, ElementRef, inject, Injector, input, output, signal, viewChild } from '@angular/core';
+import { Component, effect, ElementRef, input, output, signal, viewChild } from '@angular/core';
 
 @Component({
   selector: 'app-campo-texto-inline',
@@ -13,13 +13,17 @@ export class CampoTextoInline {
   editando = signal(false);
   inputRef = viewChild<ElementRef<HTMLInputElement | HTMLTextAreaElement>>('inputRef');
 
-  private injector = inject(Injector);
+  constructor() {
+    effect(() => {
+      const editando = this.editando();
+      if(editando){
+        this.inputRef()?.nativeElement.focus();
+      }
+    })
+  }
 
   iniciarEdicao() {
     this.editando.set(true);
-    afterNextRender(() => {
-      this.inputRef()?.nativeElement.focus();
-    }, { injector: this.injector });
   }
 
   finalizarEdicao() {

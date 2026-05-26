@@ -1,0 +1,10 @@
+.warn{
+  --mat-button-filled-container-color:#8d4744;
+}
+.accent{
+  --mat-button-filled-container-color:#c53ac5;
+}
+
+.primary{
+  --mat-button-filled-container-color:#364153;
+}
