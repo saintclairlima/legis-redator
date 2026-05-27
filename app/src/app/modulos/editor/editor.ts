@@ -1,13 +1,13 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, Subject } from 'rxjs';
-import { debounceTime, map, switchMap } from 'rxjs/operators';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ActivatedRoute, Router } from '@angular/router';
+import { finalize, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 import { CampoTextoInline } from '../../componentes/campo-texto-inline/campo-texto-inline';
-import { ApiService } from '../../services/api.service';
 import { Documento } from '../../entidades/documento.model';
+import { DocumentoService } from '../../services/http/documento.service';
 import { AreaEdicao } from './area-edicao/area-edicao';
 
 @Component({
@@ -29,7 +29,7 @@ export class Editor implements OnInit {
     { initialValue: null }
   );
 
-  constructor (private service: ApiService, private router: Router){}
+  constructor (private docService: DocumentoService, private router: Router){}
   
   ngOnInit() {
     if (this.id()) {
@@ -48,7 +48,9 @@ export class Editor implements OnInit {
   }
 
   carregarDocumento(){
-    this.service.getOne(`documento/${this.id()}`)
+    if (!this.id()) return;
+
+    this.docService.get(this.id()!)
     .pipe(finalize(()=> {
       // AFAZER: implementar ao finalizar e erros
     }))
@@ -62,12 +64,25 @@ export class Editor implements OnInit {
 
   configurarAutoSave() {
     this.salvarSubject.pipe(
+      filter(() => !!this.documento()),
       debounceTime(800),
-      switchMap(() => {
+      map(() => this.documento()!),
+      distinctUntilChanged((prev, curr) => {
+        const p = prev || {};
+        const c = curr || {};
+        return (
+          p.rotulo === c.rotulo &&
+          p.numero === c.numero &&
+          p.ano === c.ano &&
+          p.descricao === c.descricao &&
+          p.idSituacaoDocumento === c.idSituacaoDocumento
+        );
+      }),
+        switchMap(() => {
         const doc = this.documento();
         this.statusSalvamento.set('salvando');
-        return this.service.patch(
-          `documento/${doc!.id}`,
+        return this.docService.atualizar(
+          doc!.id,
           {
             rotulo: doc!.rotulo,
             numero: Number(doc!.numero),

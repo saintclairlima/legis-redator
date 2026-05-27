@@ -10,8 +10,12 @@ export class ElementoService {
 
   constructor(private apiService: ApiService) { }
 
-  getByDocumento(id: number): Observable<Elemento[]> {
-    return this.apiService.getMany(`${this.endpoint}/documento/${id}`)
+  get(id: number): Observable<Elemento> {
+    return this.apiService.getOne(this.endpoint, {id});
+  }
+
+  getByDocumento(idDocumento: number): Observable<Elemento[]> {
+    return this.apiService.getMany(`${this.endpoint}/documento/${idDocumento}`)
   }
 
   criar(elemento: DtoCriacaoElemento): Observable<Elemento> {

@@ -14,6 +14,10 @@ export class DocumentoService {
   listar(): Observable<Documento[]> {
     return this.apiService.getMany(`${this.endpoint}`)
   }
+  
+  get(id: number): Observable<Documento> {
+    return this.apiService.getOne(`${this.endpoint}/${id}`);
+  }
 
   buscar(query?: DocumentoQuery): Observable<ListaDtoResposta<Documento>> {
     return this.apiService.getOne(this.endpoint, query);
@@ -23,8 +27,8 @@ export class DocumentoService {
     return this.apiService.post(this.endpoint, dadosDocumento);
   }
 
-  atualizar(id: number, elemento: Partial<DtoCriacaoDocumento>): Observable<Documento> {
-    return this.apiService.patch(`${this.endpoint}/${id}`, elemento);
+  atualizar(id: number, documento: Partial<DtoCriacaoDocumento>): Observable<Documento> {
+    return this.apiService.patch(`${this.endpoint}/${id}`, documento);
   }
 
   deletar(id: number): Observable<void> {
