@@ -1,7 +1,5 @@
 import { Component, signal, computed, ViewChild, DestroyRef, inject } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogoConfirmacao } from '../../componentes/dialogo-confirmacao/dialogo-confirmacao';
 import { Documento, getSituacaoDocumento, RotuloSituacaoDocumento, situacoesDocumento } from '../../entidades/documento.model';
 import { DocumentoService } from '../../services/http/documento.service';
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -14,6 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ListaDtoResposta } from '../../services/http/lista.dto';
 import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { AlertaService } from '../../services/alerta.service';
 
 @Component({
   selector: 'app-inicio',
@@ -50,7 +49,7 @@ export class Inicio{
     );
   });
 
-  constructor (private fb: FormBuilder, private documentoService: DocumentoService, private router: Router, private dialog: MatDialog) {
+  constructor (private fb: FormBuilder, private documentoService: DocumentoService, private router: Router, private alertaService: AlertaService) {
     this.form = this.fb.group({
       busca: [''],
       idSituacao: [null],
@@ -133,25 +132,9 @@ export class Inicio{
   
   visualizar(id: number) { /* ... */ }  
 
-  deletar(id: number) {
-    const dialogRef = this.dialog.open(DialogoConfirmacao, {
-      width: '420px',
-      disableClose: true,
-      data: {
-        titulo: 'Excluir documento',
-        mensagem: 'Tem certeza que deseja excluir este documento?',
-        textoConfirmar: 'Excluir',
-        textoCancelar: 'Cancelar',
-        corConfirmar: 'warn',
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmado: boolean) => {
-      if (!confirmado) return;
-
-      this.carregandoDocumentos.set(true);
-
-      this.documentoService.deletar(id)
+  excluir(id: number){
+    this.carregandoDocumentos.set(true);
+    this.documentoService.deletar(id)
       .pipe(finalize(() => this.carregandoDocumentos.set(false)))
       .subscribe({
         next: () => {
@@ -159,7 +142,20 @@ export class Inicio{
         },
         error: (err) => console.error('Erro ao deletar:', err)
       });
-    });
+
+  }
+
+  deletar(id: number) {
+    this.alertaService.confirmarOperacao({
+      titulo: 'Excluir documento',
+      mensagem: 'Tem certeza que deseja excluir este documento?',
+      textoConfirmar: 'Excluir',
+      textoCancelar: 'Cancelar',
+      corConfirmar: 'warn',
+      acaoAoConfirmar: () => {
+        this.excluir(id);
+      }
+    })
   }
 
   gerarDadosDocumentoVazio(): Partial<Documento> {
