@@ -211,13 +211,10 @@ export class ElementoService {
         }
 
         try {
-          // AFAZER: considerar se faz sentido fazer softRemove, já que o elemento
-          // removido vai ficar órfão, sem referências de qual elemento vinha antes e depois
           const idElementoSeguinte = elemento.idElementoSeguinte;
           elemento.idElementoSeguinte = null;
-          elemento.idUsuarioExclusao = idUsuario;          
+          elemento.idUsuarioExclusao = idUsuario;
           await repoTransacao.save(elemento);
-          const resultadoRemocao = await repoTransacao.softRemove(elemento);
 
           const elementoAnterior = await repoTransacao.findOneBy({ idElementoSeguinte: idElemento });
           if (elementoAnterior) {
@@ -225,6 +222,8 @@ export class ElementoService {
             elementoAnterior.idUsuarioAlteracao = idUsuario;
             await repoTransacao.save(elementoAnterior);
           }
+          
+          const resultadoRemocao = await repoTransacao.remove(elemento);
 
           return resultadoRemocao;
 
