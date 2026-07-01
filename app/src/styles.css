@@ -64,3 +64,31 @@ footer {
   z-index: 10;
   position: relative;
 }
+
+/* SNACKBAR */
+.snackbar-erro .mdc-snackbar__surface {
+  background-color: #d32f2f !important;
+  color: #ffffff !important;
+}
+
+.snackbar-erro .mat-mdc-button {
+  color: #ffffff !important;
+}
+
+.snackbar-info .mdc-snackbar__surface {
+  background-color: #1976d2 !important;
+  color: #ffffff !important;
+}
+
+.snackbar-info .mat-mdc-button {
+  color: #ffffff !important;
+}
+
+.snackbar-sucesso .mdc-snackbar__surface {
+  background-color: #2e7d32 !important;
+  color: #ffffff !important;
+}
+
+.snackbar-sucesso .mat-mdc-button {
+  color: #ffffff !important;
+}

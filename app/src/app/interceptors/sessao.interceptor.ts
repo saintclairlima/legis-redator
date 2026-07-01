@@ -17,7 +17,6 @@ export class AutenticacaoInterceptor implements HttpInterceptor {
         return next.handle(request).pipe(
             catchError((error) => {
                 if (error instanceof HttpErrorResponse && error.status === 401) {
-                    // AFAZER: Implementar aviso
                     this.sessaoService.encerrarSessao();
                 }
                 return throwError(() => error);

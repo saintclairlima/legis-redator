@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -12,6 +12,7 @@ import { finalize } from 'rxjs';
 import { cpfValidator } from '../validators/cpf.validator';
 import { MensagemDetalhes } from '../componentes/mensagem-detalhes/mensagem-detalhes';
 import { AutenticacaoService } from '../services/autenticacao.service';
+import { AlertaService } from '../services/alerta.service';
 
 @Component({
   selector: 'app-login',
@@ -40,8 +41,8 @@ export class Login {
 
   constructor(
     private autenticacaoService: AutenticacaoService,
-    private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private alertaService: AlertaService
   ){ }
 
   toggleExibirMensagemEsqueceuSenha() {
@@ -67,10 +68,10 @@ export class Login {
         },
         error: (erro) => {
           if (erro.status === 401) {
-            this.snackBar.open('CPF ou senha inválidos.', 'Fechar', { duration: 4000 });
+            this.alertaService.mostrarNotificacao('CPF ou senha inválidos.', { rotuloBotao: 'Fechar', duracao: 4000, estilo: 'erro' });
             return;
           }
-          this.snackBar.open('Não foi possível realizar o login. Tente novamente.', 'Fechar', { duration: 4000 });
+          this.alertaService.mostrarNotificacao('Não foi possível realizar o login. Tente novamente.', { rotuloBotao: 'Fechar', duracao: 4000, estilo: 'erro' });
           console.error('Ocorreu um erro ao fazer login.', erro)
         }
       });

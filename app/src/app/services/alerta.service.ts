@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { DialogoConfirmacao } from '../componentes/dialogo-confirmacao/dialogo-confirmacao';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs/internal/operators/take';
+import { DialogoConfirmacao } from '../componentes/dialogo-confirmacao/dialogo-confirmacao';
 
 interface Confirmacao{
   titulo?: string;
@@ -12,10 +13,16 @@ interface Confirmacao{
   acaoAoConfirmar?: () => void;
 }
 
+  interface OpcoesNotificacao {
+    rotuloBotao?: string;
+    duracao?: number;
+    estilo?: 'sucesso' | 'erro' | 'info';
+  }
+
 @Injectable({ providedIn: 'root' })
 export class AlertaService {
 
-  constructor(private dialog: MatDialog, ) {}
+  constructor(private dialog: MatDialog, private snackBar: MatSnackBar) {}
 
   confirmarOperacao(confirmacao?: Confirmacao): MatDialogRef<DialogoConfirmacao, any>{
     const dados = {
@@ -43,5 +50,18 @@ export class AlertaService {
 
     return dialog;
   }
-  
+
+  mostrarNotificacao( mensagem: string, opcoes: OpcoesNotificacao = {}) {
+    const { rotuloBotao = 'Fechar', duracao = 4000, estilo } = opcoes;
+    const classes = { sucesso: 'snackbar-sucesso', erro: 'snackbar-erro', info: 'snackbar-info' };
+
+    this.snackBar.open(
+      mensagem,
+      rotuloBotao,
+      {
+        duration: duracao,
+        ...(estilo && { panelClass: [classes[estilo]] })
+      }
+    );
+  }
 }
