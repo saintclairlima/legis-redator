@@ -49,7 +49,12 @@ export class Inicio{
     );
   });
 
-  constructor (private fb: FormBuilder, private documentoService: DocumentoService, private router: Router, private alertaService: AlertaService) {
+  constructor (
+    private fb: FormBuilder,
+    private documentoService: DocumentoService,
+    private router: Router,
+    private alertaService: AlertaService
+  ) {
     this.form = this.fb.group({
       busca: [''],
       idSituacao: [null],
@@ -120,8 +125,8 @@ export class Inicio{
         this.editar(doc.id);
       },
       error: (erro) => {
-        // AFAZER: implementar output de erro
-        console.error(erro);
+        this.alertaService.mostrarNotificacao('Erro ao criar novo documento.', {estilo: 'erro'});
+        console.error('Erro ao criar novo documento', erro);
       }
     });
   }

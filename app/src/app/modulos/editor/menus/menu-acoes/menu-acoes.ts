@@ -24,7 +24,6 @@ export class MenuAcoes {
   }
   
   emitirChecarViolacoes(){
-    // AFAZER: pensar no mecanismo de checar violações
     // this.acaoSelecionada.emit({tipo: 'violacoes', valor: null});
   }
   

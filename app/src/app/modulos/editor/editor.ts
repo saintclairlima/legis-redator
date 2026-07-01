@@ -9,6 +9,7 @@ import { CampoTextoInline } from '../../componentes/campo-texto-inline/campo-tex
 import { Documento } from '../../entidades/documento.model';
 import { DocumentoService } from '../../services/http/documento.service';
 import { AreaEdicao } from './area-edicao/area-edicao';
+import { AlertaService } from '../../services/alerta.service';
 
 @Component({
   selector: 'app-editor',
@@ -29,7 +30,11 @@ export class Editor implements OnInit {
     { initialValue: null }
   );
 
-  constructor (private docService: DocumentoService, private router: Router){}
+  constructor (
+    private docService: DocumentoService,
+    private router: Router,
+    private alertaService: AlertaService
+  ){}
   
   ngOnInit() {
     if (this.id()) {
@@ -49,16 +54,16 @@ export class Editor implements OnInit {
 
   carregarDocumento(){
     if (!this.id()) return;
-
     this.docService.get(this.id()!)
-    .pipe(finalize(()=> {
-      // AFAZER: implementar ao finalizar e erros
-    }))
+    .pipe(finalize(()=> {}))
     .subscribe({
       next: (doc) => {
         this.documento.set(doc);
       },
-      error: (erro) => console.error(erro)
+      error: (erro) => {
+        console.error(erro);
+        this.alertaService.mostrarNotificacao('Erro ao carregar documento', {estilo: 'erro'});
+      }
     })
   }
 

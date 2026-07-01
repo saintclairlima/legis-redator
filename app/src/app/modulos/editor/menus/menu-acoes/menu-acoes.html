@@ -2,7 +2,6 @@
 <div class="overlay-menu fixed inset-0" (click)="fechar.emit()"></div>
 
 <div class="relative flex">
-  <!-- AFAZER: definir melhor maneira de altura máxima -->
   <div class="caixa-menu bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col py-4 pr-4 max-h-[35vh] overflow-y-auto">
     <button class="opcao-menu-editor" (click)="toggleSubmenuTiposAberto()">
       <mat-icon class="scale-75 text-gray-500">notes</mat-icon> Alterar Tipo
@@ -17,7 +16,6 @@
       <mat-icon class="scale-75 text-gray-500">search</mat-icon> Busca de Conteúdo
     </button>
     <button class="opcao-menu-editor">
-      <!-- AFAZER: procurar nome melhor -->
       <mat-icon class="scale-75 text-gray-500">error</mat-icon> Checar Violações
     </button>
     <button class="opcao-menu-editor" (click)="emitirRemover()">
@@ -25,7 +23,6 @@
     </button>
 
   </div>
-      <!-- AFAZER: definir melhor a forma de controle de largura do submenu -->
     @if(submenuTiposAberto()) {
       <div class="relative">
         <app-menu-tipos (fechar)="toggleSubmenuTiposAberto()" (tipoSelecionado)="retornarTipoSelecionado($event)"/>

@@ -5,6 +5,7 @@ import { DtoCriacaoElemento, Elemento, RotuloSituacaoElemento, RotuloTipoElement
 import { ElementoService } from '../../../services/http/elemento.service';
 import { BlocoEdicao } from '../bloco-edicao/bloco-edicao';
 import { DadosBlocoEmFoco } from '../types';
+import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
   selector: 'app-area-edicao',
@@ -29,7 +30,10 @@ export class AreaEdicao {
   idBlocoSendoArrastado = signal<number | null>(null);
   idBlocoSobreposto = signal<number | null>(null);
 
-  constructor(private service: ElementoService){
+  constructor(
+    private service: ElementoService,
+    private alertaService: AlertaService
+  ){
     effect(() => {
       const id = this.idDocumento();
       if (id) {
@@ -59,7 +63,7 @@ export class AreaEdicao {
           }
         });
       }
-     })    
+    });
   }
 
   aoIniciarArrasto(evento: DragEvent, id: number) {
@@ -88,10 +92,9 @@ export class AreaEdicao {
     .subscribe({
       next: (resultado) => {},
       error: (erro) => {
-        // Em caso de erro, reverte para o estado anterior
-        // AFAZER: Implementar uma forma mais elegante de informar ao usuário
         this.blocos.set(estadoAnterior);
-        alert('Erro ao salvar posição. Revertendo...');
+        this.alertaService.mostrarNotificacao('Erro ao salvar posição. Revertendo alterações...', {estilo:'erro'}); 
+        console.error('Erro ao salvar posição. Revertendo alterações...', erro);
       }
     })
 
@@ -199,8 +202,8 @@ export class AreaEdicao {
         
       },
       error: (erro) => {
-        // AFAZER: tratar erro
-        console.error(erro);
+        this.alertaService.mostrarNotificacao('Erro ao carregar documento', {estilo: 'erro'})
+        console.error('Erro ao carregar documento', erro);
       }
     });
   }

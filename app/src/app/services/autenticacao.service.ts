@@ -16,7 +16,6 @@ export class AutenticacaoService {
     .pipe(
       map((resposta) => {
         if (!resposta || !resposta['access_token']) {
-          // AFAZER: consertar mensagem de erro
           throw new Error('Erro no processo de autenticação.')
         }
         return resposta;
