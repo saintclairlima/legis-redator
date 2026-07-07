@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
-import { ElementoService } from './elemento.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import { type RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
 import { CreateElementoDto } from './dto/create-elemento.dto';
 import { UpdateElementoDto } from './dto/update-elemento.dto';
+import { ElementoService } from './elemento.service';
 import { ElementoEntity } from './entities/elemento.entity';
-import { type RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
 
 @Controller('elemento')
 export class ElementoController {

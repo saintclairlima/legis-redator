@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from "node_modules/class-validator";
+import { IsNotEmpty, IsString } from "node_modules/class-validator";
 
 export class AutenticacaoDto {
   @IsString()

@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { SituacaoDocumentoService } from './situacao-documento.service';
 import { SituacaoDocumentoEntity } from './entities/situacao-documento.entity';
+import { SituacaoDocumentoService } from './situacao-documento.service';
 
 @Controller('situacao-documento')
 export class SituacaoDocumentoController {

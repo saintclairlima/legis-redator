@@ -1,6 +1,6 @@
 import { ElementoEntity } from 'src/elemento/entities/elemento.entity';
 import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'Anotacao', schema: 'dbo' })
 export class AnotacaoEntity  extends EntidadeBaseAuditavel {

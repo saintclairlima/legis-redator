@@ -1,9 +1,7 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, SetMetadata, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { DadosUsuarioLogado } from './local-jwt.service';
 import { Request } from 'express';
-import { LocalJwtService } from './local-jwt.service';
-import { SetMetadata } from '@nestjs/common';
+import { DadosUsuarioLogado, LocalJwtService } from './local-jwt.service';
 
 export const E_ROTA_PUBLICA = 'isPublic';
 export const Publica = () => SetMetadata(E_ROTA_PUBLICA, true);

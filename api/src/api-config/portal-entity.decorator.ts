@@ -1,5 +1,5 @@
-import { Entity, EntityOptions } from 'typeorm';
 import 'dotenv/config';
+import { Entity, EntityOptions } from 'typeorm';
 
 function createDatabaseEntityDecorator(schema: string) {
   return (name: string, options?: EntityOptions): ClassDecorator => {

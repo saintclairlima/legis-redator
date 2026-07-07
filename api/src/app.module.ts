@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AnotacaoModule } from './anotacao/anotacao.module';
+import { DbConfigService } from './api-config/database.config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AutenticacaoModule } from './autenticacao/autenticacao.module';
 import { DocumentoModule } from './documento/documento.module';
 import { ElementoModule } from './elemento/elemento.module';
+import { EntidadeBaseModule } from './entidade-base/entidade-base.module';
+import { ReferenciaModule } from './referencia/referencia.module';
 import { SituacaoDocumentoModule } from './situacao-documento/situacao-documento.module';
 import { SituacaoElementoModule } from './situacao-elemento/situacao-elemento.module';
 import { TipoElementoModule } from './tipo-elemento/tipo-elemento.module';
-import { ReferenciaModule } from './referencia/referencia.module';
-import { AnotacaoModule } from './anotacao/anotacao.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
-import { DbConfigService } from './api-config/database.config.service';
 import { UsuarioModule } from './usuario/usuario.module';
-import { EntidadeBaseModule } from './entidade-base/entidade-base.module';
-import { AutenticacaoModule } from './autenticacao/autenticacao.module';
 
 import { APP_GUARD } from '@nestjs/core';
 import { AutenticacaoGuard } from './autenticacao/autenticacao.guard';

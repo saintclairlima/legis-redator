@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { AnotacaoService } from './anotacao.service';
-import { AnotacaoController } from './anotacao.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AnotacaoController } from './anotacao.controller';
+import { AnotacaoService } from './anotacao.service';
 import { AnotacaoEntity } from './entities/anotacao.entity';
 
 @Module({

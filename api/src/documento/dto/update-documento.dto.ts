@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { IsNumber, IsOptional } from 'class-validator';
 import { CreateDocumentoDto } from './create-documento.dto';
-import { IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UpdateDocumentoDto extends PartialType(CreateDocumentoDto) {
   @IsNumber()

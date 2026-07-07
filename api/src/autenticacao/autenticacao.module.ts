@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AutenticacaoService } from './autenticacao.service';
-import { AutenticacaoController } from './autenticacao.controller';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { UsuarioModule } from 'src/usuario/usuario.module';
 import { HashService } from 'src/util/hash.service';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { AutenticacaoController } from './autenticacao.controller';
+import { AutenticacaoService } from './autenticacao.service';
 import { LocalJwtService } from './local-jwt.service';
 
 @Module({

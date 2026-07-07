@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import type { RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
 import { AnotacaoService } from './anotacao.service';
 import { CreateAnotacaoDto } from './dto/create-anotacao.dto';
 import { UpdateAnotacaoDto } from './dto/update-anotacao.dto';
 import { AnotacaoEntity } from './entities/anotacao.entity';
-import type { RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
 @Controller('anotacao')
 export class AnotacaoController {
   constructor(private readonly anotacaoService: AnotacaoService) {}

@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import type { RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
 import { DocumentoService } from './documento.service';
 import { CreateDocumentoDto } from './dto/create-documento.dto';
+import { DocumentoQueryDto } from './dto/listar-documento.dto';
 import { UpdateDocumentoDto } from './dto/update-documento.dto';
 import { DocumentoEntity } from './entities/documento.entity';
-import type { RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
-import { DocumentoQueryDto } from './dto/listar-documento.dto';
 
 @Controller('documento')
 export class DocumentoController {

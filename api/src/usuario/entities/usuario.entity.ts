@@ -1,5 +1,5 @@
 import { DboEntity, PortalEntity } from 'src/api-config/portal-entity.decorator';
-import { PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Column, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @DboEntity('pessoa')
 export class PessoaEntity {

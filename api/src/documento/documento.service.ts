@@ -1,13 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateDocumentoDto } from './dto/create-documento.dto';
-import { UpdateDocumentoDto } from './dto/update-documento.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DocumentoEntity } from './entities/documento.entity';
-import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
-import { DocumentoQueryDto } from './dto/listar-documento.dto';
-import { ListaDtoResposta } from 'src/entidade-base/lista.dto';
-import { Like } from 'typeorm';
 import { ElementoEntity } from 'src/elemento/entities/elemento.entity';
+import { ListaDtoResposta } from 'src/entidade-base/lista.dto';
+import { DataSource, FindOptionsWhere, Like, Repository } from 'typeorm';
+import { CreateDocumentoDto } from './dto/create-documento.dto';
+import { DocumentoQueryDto } from './dto/listar-documento.dto';
+import { UpdateDocumentoDto } from './dto/update-documento.dto';
+import { DocumentoEntity } from './entities/documento.entity';
 
 @Injectable()
 export class DocumentoService {

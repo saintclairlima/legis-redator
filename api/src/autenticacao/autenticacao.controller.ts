@@ -1,7 +1,7 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { Publica } from './autenticacao.guard';
 import { AutenticacaoService } from './autenticacao.service';
 import { AutenticacaoDto } from './dto/autenticacao.dto';
-import { Publica } from './autenticacao.guard';
 
 
 @Controller('autenticacao')

@@ -1,5 +1,5 @@
-import { IsOptional, IsNumber, IsString } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ListaDtoRequisicao } from 'src/entidade-base/lista.dto';
 
 export class DocumentoQueryDto extends ListaDtoRequisicao{

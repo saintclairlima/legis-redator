@@ -1,5 +1,5 @@
 import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum RotuloSituacaoDocumento {
   Rascunho = 'Rascunho',

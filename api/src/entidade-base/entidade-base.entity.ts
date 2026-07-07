@@ -1,5 +1,5 @@
 import { UsuarioEntity } from "src/usuario/entities/usuario.entity";
-import { CreateDateColumn, Column, ManyToOne, JoinColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, JoinColumn, ManyToOne, UpdateDateColumn } from "typeorm";
 
 export abstract class EntidadeBaseAuditavel {
 

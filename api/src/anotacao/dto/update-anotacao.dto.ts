@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateAnotacaoDto } from './create-anotacao.dto';
 import { IsNumber, IsOptional } from 'class-validator';
+import { CreateAnotacaoDto } from './create-anotacao.dto';
 
 export class UpdateAnotacaoDto extends PartialType(CreateAnotacaoDto) {
   @IsNumber()

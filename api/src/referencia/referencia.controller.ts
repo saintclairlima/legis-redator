@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
-import { ReferenciaService } from './referencia.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import type { RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
 import { CreateReferenciaDto } from './dto/create-referencia.dto';
 import { UpdateReferenciaDto } from './dto/update-referencia.dto';
 import { ReferenciaEntity } from './entities/referencia.entity';
-import type { RequisicaoComUsuario } from 'src/autenticacao/autenticacao.guard';
+import { ReferenciaService } from './referencia.service';
 
 @Controller('referencia')
 export class ReferenciaController {

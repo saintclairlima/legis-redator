@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PermissaoDocumentoService } from './permissao-documento.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CreatePermissaoDocumentoDto } from './dto/create-permissao-documento.dto';
 import { UpdatePermissaoDocumentoDto } from './dto/update-permissao-documento.dto';
+import { PermissaoDocumentoService } from './permissao-documento.service';
 
 @Controller('permissao-documento')
 export class PermissaoDocumentoController {

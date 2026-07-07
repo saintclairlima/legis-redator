@@ -2,7 +2,7 @@ import { ElementoEntity } from 'src/elemento/entities/elemento.entity';
 import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
 import { PermissaoDocumentoEntity } from 'src/permissao-documento/entities/permissao-documento.entity';
 import { SituacaoDocumentoEntity } from 'src/situacao-documento/entities/situacao-documento.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'Documento', schema: 'dbo' })
 export class DocumentoEntity extends EntidadeBaseAuditavel {

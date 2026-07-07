@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AutenticacaoDto } from './dto/autenticacao.dto';
-import { HashService } from 'src/util/hash.service';
-import { UsuarioService } from 'src/usuario/usuario.service';
 import { UsuarioEntity } from 'src/usuario/entities/usuario.entity';
+import { UsuarioService } from 'src/usuario/usuario.service';
+import { HashService } from 'src/util/hash.service';
+import { AutenticacaoDto } from './dto/autenticacao.dto';
 import { DadosUsuarioLogado, LocalJwtService } from './local-jwt.service';
 
 @Injectable()

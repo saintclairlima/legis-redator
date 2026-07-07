@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional, IsArray, IsNumber } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateReferenciaDto {
   @IsString()

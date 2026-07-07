@@ -1,10 +1,10 @@
+import { AnotacaoEntity } from 'src/anotacao/entities/anotacao.entity';
 import { DocumentoEntity } from 'src/documento/entities/documento.entity';
+import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
+import { ReferenciaEntity } from 'src/referencia/entities/referencia.entity';
 import { SituacaoElementoEntity } from 'src/situacao-elemento/entities/situacao-elemento.entity';
 import { TipoElementoEntity } from 'src/tipo-elemento/entities/tipo-elemento.entity';
-import { AnotacaoEntity } from 'src/anotacao/entities/anotacao.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne, OneToOne, ManyToMany, JoinTable } from 'typeorm';
-import { ReferenciaEntity } from 'src/referencia/entities/referencia.entity';
-import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'Elemento', schema: 'dbo' })
 export class ElementoEntity extends EntidadeBaseAuditavel{
