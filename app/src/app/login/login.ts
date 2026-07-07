@@ -1,18 +1,18 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { cpfValidator } from '../validators/cpf.validator';
 import { MensagemDetalhes } from '../componentes/mensagem-detalhes/mensagem-detalhes';
-import { AutenticacaoService } from '../services/autenticacao.service';
 import { AlertaService } from '../services/alerta.service';
+import { AutenticacaoService } from '../services/autenticacao.service';
+import { cpfValidator } from '../validators/cpf.validator';
 
 @Component({
   selector: 'app-login',

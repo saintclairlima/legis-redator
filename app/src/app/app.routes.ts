@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { Login } from './login/login';
-import { Inicio } from './modulos/inicio/inicio';
-import { Editor } from './modulos/editor/editor';
-import { loginGuard } from './guards/login.guard';
 import { autenticadoGuard } from './guards/autenticado.guard';
+import { loginGuard } from './guards/login.guard';
+import { Login } from './login/login';
+import { Editor } from './modulos/editor/editor';
+import { Inicio } from './modulos/inicio/inicio';
 import { PaginaErro } from './pagina-erro/pagina-erro';
 
 export const routes: Routes = [

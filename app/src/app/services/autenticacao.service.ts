@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
+import { map, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { SessaoService } from './sessao.service';
-import { map, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AutenticacaoService {

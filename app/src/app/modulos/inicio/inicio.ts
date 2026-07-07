@@ -1,18 +1,18 @@
-import { Component, signal, computed, ViewChild, DestroyRef, inject } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Documento, getSituacaoDocumento, RotuloSituacaoDocumento, situacoesDocumento } from '../../entidades/documento.model';
-import { DocumentoService } from '../../services/http/documento.service';
+import { Component, computed, DestroyRef, inject, signal, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatSelectModule } from "@angular/material/select";
+import { MatIcon } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, finalize, mergeWith, startWith, switchMap } from 'rxjs/operators';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ListaDtoResposta } from '../../services/http/lista.dto';
-import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from "@angular/material/select";
 import { Router } from '@angular/router';
+import { debounceTime, distinctUntilChanged, finalize, mergeWith, startWith, switchMap } from 'rxjs/operators';
+import { Documento, getSituacaoDocumento, RotuloSituacaoDocumento, situacoesDocumento } from '../../entidades/documento.model';
 import { AlertaService } from '../../services/alerta.service';
+import { DocumentoService } from '../../services/http/documento.service';
+import { ListaDtoResposta } from '../../services/http/lista.dto';
 
 @Component({
   selector: 'app-inicio',

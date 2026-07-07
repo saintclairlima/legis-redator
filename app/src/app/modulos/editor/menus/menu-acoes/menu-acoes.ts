@@ -1,8 +1,8 @@
 import { Component, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MenuTipos } from '../menu-tipos/menu-tipos';
-import { AcaoOpcaoMenu } from '../../types';
 import { TipoElemento } from '../../../../entidades/elemento.model';
+import { AcaoOpcaoMenu } from '../../types';
+import { MenuTipos } from '../menu-tipos/menu-tipos';
 
 @Component({
   selector: 'app-menu-acoes',

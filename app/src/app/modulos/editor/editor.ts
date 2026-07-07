@@ -7,9 +7,9 @@ import { finalize, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 import { CampoTextoInline } from '../../componentes/campo-texto-inline/campo-texto-inline';
 import { Documento } from '../../entidades/documento.model';
+import { AlertaService } from '../../services/alerta.service';
 import { DocumentoService } from '../../services/http/documento.service';
 import { AreaEdicao } from './area-edicao/area-edicao';
-import { AlertaService } from '../../services/alerta.service';
 
 @Component({
   selector: 'app-editor',

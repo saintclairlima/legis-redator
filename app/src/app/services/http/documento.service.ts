@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { ApiService } from "../api.service";
 import { Observable } from "rxjs";
 import { Documento, DocumentoQuery, DtoCriacaoDocumento } from "../../entidades/documento.model";
+import { ApiService } from "../api.service";
 import { ListaDtoResposta } from "./lista.dto";
 
 @Injectable({ providedIn: 'root' })
