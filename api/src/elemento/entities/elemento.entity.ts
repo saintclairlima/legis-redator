@@ -1,10 +1,10 @@
 import { AnotacaoEntity } from 'src/anotacao/entities/anotacao.entity';
 import { DocumentoEntity } from 'src/documento/entities/documento.entity';
 import { EntidadeBaseAuditavel } from 'src/entidade-base/entidade-base.entity';
-import { ReferenciaEntity } from 'src/referencia/entities/referencia.entity';
+import { ReferenciaElementoEntity } from 'src/referencia-elemento/entities/referencia-elemento.entity';
 import { SituacaoElementoEntity } from 'src/situacao-elemento/entities/situacao-elemento.entity';
 import { TipoElementoEntity } from 'src/tipo-elemento/entities/tipo-elemento.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'Elemento', schema: 'dbo' })
 export class ElementoEntity extends EntidadeBaseAuditavel{
@@ -55,12 +55,6 @@ export class ElementoEntity extends EntidadeBaseAuditavel{
   @OneToMany(() => AnotacaoEntity, anotacao => anotacao.elemento)
   anotacoes: AnotacaoEntity[];
 
-  @ManyToMany(() => ReferenciaEntity, referencia => referencia.elementos)
-  @JoinTable({
-    name: 'ReferenciaElemento',
-    schema: 'dbo',
-    joinColumn: { name: 'idElemento', referencedColumnName: 'id', foreignKeyConstraintName: 'ReferenciaElemento_Elemento_FK' },
-    inverseJoinColumn: { name: 'idReferencia', referencedColumnName: 'id', foreignKeyConstraintName: 'ReferenciaElemento_Referencia_FK' }
-  })
-  referencias: ReferenciaEntity[];
+  @OneToMany(() => ReferenciaElementoEntity, referenciaElemento => referenciaElemento.elemento)
+  referenciasElemento: ReferenciaElementoEntity[];
 }

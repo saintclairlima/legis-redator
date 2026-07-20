@@ -60,7 +60,7 @@ export class ElementoService {
               tipoElemento: true,
               situacaoElemento: true,
               elementoSeguinte: true,
-              referencias: true,
+              referenciasElemento: true,
               anotacoes: true
             },
           });
@@ -82,7 +82,7 @@ export class ElementoService {
         usuarioAlteracao: { pessoa: true },
         elementoSeguinte: true,
         anotacoes: true,
-        referencias: true,
+        referenciasElemento: true,
       },
     });
   }
@@ -113,7 +113,7 @@ export class ElementoService {
         tipoElemento: true,
         situacaoElemento: true,
         elementoSeguinte: true,
-        referencias: true,
+        referenciasElemento: true,
         anotacoes: true
       },
     });
@@ -133,7 +133,7 @@ export class ElementoService {
             usuarioAlteracao: { pessoa: true },
             elementoSeguinte: true,
             anotacoes: true,
-            referencias: true,
+            referenciasElemento: true,
           }
         : undefined,
       });

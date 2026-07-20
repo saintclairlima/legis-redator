@@ -2,17 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, effect, ElementRef, HostListener, input, model, output, signal, viewChild, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Editor } from '@tiptap/core';
-import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import StarterKit from '@tiptap/starter-kit';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
-import { AcaoOpcaoMenu, DadosBlocoEmFoco, TipoMenu } from '../types';
-import { ApiIaService } from '../../../services/api-ia.service';
-import { BlocoReferencias } from '../bloco-referencias/bloco-referencias';
 import { Elemento, RotuloTipoElemento, TipoElemento } from '../../../entidades/elemento.model';
+import { Referencia } from '../../../entidades/referencia.model';
 import { ElementoService } from '../../../services/http/elemento.service';
+import { BlocoReferencias } from '../bloco-referencias/bloco-referencias';
 import { MenuAcoes } from '../menus/menu-acoes/menu-acoes';
 import { MenuEstilo } from '../menus/menu-estilo/menu-estilo';
 import { MenuTipos } from '../menus/menu-tipos/menu-tipos';
+import { AcaoOpcaoMenu, DadosBlocoEmFoco, TipoMenu } from '../types';
 
 @Component({
   selector: 'app-bloco-edicao',
@@ -32,6 +32,7 @@ export class BlocoEdicao {
   aoRemoverBloco = output();
 
   dados = computed(() => this.dadosSignal()());
+  blocoReferenciasAberto = signal<boolean>(false);
   tipoMenuAberto = signal<TipoMenu | null>(null);
   posicaoMenuEstilo = signal({ top: 0, left: 0 });
   
@@ -43,8 +44,7 @@ export class BlocoEdicao {
   private atualizarConteudoSubject = new Subject<string>();
 
   constructor(
-    private elementoService: ElementoService,
-    private iaService: ApiIaService,
+    private elementoService: ElementoService
   ){
 
     effect(() => {
@@ -141,6 +141,11 @@ export class BlocoEdicao {
     this.fecharMenu();
   }
 
+  aoAtualizarReferencias(referencias: Referencia[]) {
+    const dadosAtualizados = { ...this.dados(), referencias };
+    this.aoAlterarDadosBloco.emit(dadosAtualizados);
+  }
+
   aplicarEstiloInline(tag: 'b' | 'i' | 'u') {
     if (!this.editorTipTap) return;
 
@@ -177,22 +182,6 @@ export class BlocoEdicao {
     this.focoManual.set(false);
   }
 
-  gerarReferencias() {
-    if(!this.dados().texto) return
-    this.iaService.getReferencias(this.dados().texto!)
-    .subscribe({
-      next: (resposta) => {
-        const dadosAtualizados = {
-          ...this.dados(),
-          referencias: resposta,
-        };
-        this.aoAlterarDadosBloco.emit(dadosAtualizados);
-      },
-      error: (erro) => console.error(erro),
-    });
-    this.fecharMenu();
-  }
-
   processarResultadoMenuAcoes(acao: AcaoOpcaoMenu) {
     switch (acao.tipo) {
       case 'alterarTipo':
@@ -201,7 +190,7 @@ export class BlocoEdicao {
       case 'anotacao':
         throw new Error ('Ação com suporte ainda não implementado.');
       case 'referencias':
-        this.gerarReferencias();
+        this.toggleReferencias();
         break;
       case 'violacoes':
         throw new Error ('Ação com suporte ainda não implementado.');
@@ -230,6 +219,11 @@ export class BlocoEdicao {
 
   toggleMenu(tipoMenu: TipoMenu) {
     this.tipoMenuAberto.update(tipoAtual => tipoAtual === tipoMenu ? null : tipoMenu);
+  }
+
+  toggleReferencias() {
+    this.blocoReferenciasAberto.update(valor => !valor);
+    this.fecharMenu();
   }
 
   @HostListener('document:selectionchange')

@@ -1,77 +1,33 @@
-@if (referencias().length > 0) {
+@if (referencias().length > 0 || blocoReferenciasAberto()) {
+  <!-- Cabeçalho para mostrar ou ocultar área de referências -->
   <div
     class="flex items-center text-xs text-blue-400 transition-colors cursor-pointer py-2"
     (click)="toggleReferencias()">
     <span class="flex items-center hover:bg-slate-100 rounded-xl p-1">
-      <mat-icon>{{ referenciasAbertas() ? 'expand_less' : 'expand_more' }}</mat-icon>
+      <mat-icon>{{ blocoReferenciasAberto() ? 'expand_less' : 'expand_more' }}</mat-icon>
       <mat-icon class="scale-70">import_contacts</mat-icon>
-      {{ referenciasAbertas() ? 'Ocultar Referências' : 'Ver Referências (' + referencias().length + ')' }}
+      {{ blocoReferenciasAberto() ? 'Ocultar Referências' : 'Ver Referências (' + referencias().length + ')' }}
     </span> 
   </div>
 
-  @if (referenciasAbertas()) {
+  <!-- Área de Busca -->
+  @if (blocoReferenciasAberto()) {
+    <app-area-busca-referencias
+      [textoBase]="textoBase()"
+      (aoPesquisar)="adicionarReferencias($event)">
+    </app-area-busca-referencias>
+  }
+
+  <!-- Referências Adicionadas -->
+  @if (blocoReferenciasAberto() && referencias().length > 0) {
     <div class="mt-2 flex flex-col gap-4 p-4 border border-slate-200/60 rounded-xl max-w-3xl">
-      
+      Referências Adicionadas
       @for (referencia of referencias(); track $index) {
-        @let estaExpandido = referenciasExpandidas().has($index);
-        <div class="flex flex-col gap-4">
-          
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-3">
-              <div class="flex flex-col select-text">
-                <div class="font-bold text-sm text-slate-800 text-base leading-tight">
-                  {{ referencia.titulo }}
-                </div>
-                <span class="text-xs font-medium text-slate-400 mt-0.5">
-                  {{ referencia.autor }}
-                </span>
-              </div>
-            </div>
-
-            @let porcRelevancia = (1.0 - referencia.score);
-            <div class="flex items-center gap-3 shrink-0">
-              <span class="px-2.5 py-1 text-xs rounded-full" [ngClass]="getClasseBadge(porcRelevancia)">
-                {{ getRotuloRelevancia(porcRelevancia) }}
-              </span>
-              <span class="text-sm text-slate-500">
-                {{ porcRelevancia | percent:'1.0-0' }}
-              </span>
-            </div>
-          </div>
-
-          <div class="relative bg-slate-50 p-4 rounded-xl">
-            
-            <p class="flex text-xs text-slate-600 leading-relaxed italic whitespace-pre-line" [class.line-clamp-3]="!estaExpandido">
-              <span class="text-4xl text-emerald-500 font-bold font-serif">“</span>
-              <span class="pl-2 pt-2 select-text">{{ referencia.texto }}</span>
-            </p>
-          </div>
-
-          <div class="flex justify-between items-center text-xs font-medium text-blue-400 pt-2">
-            <button
-              [matTooltip]="estaExpandido ? 'Mostrar menos' : 'Mostrar mais'" 
-              (click)="toggleTexto($index)"
-              class="flex items-center justify-center p-1.5 rounded-xl hover:bg-slate-100 transition-colors">
-              <mat-icon class="text-base w-4 h-4 flex items-center justify-center">{{ estaExpandido ? 'expand_less' : 'expand_more' }}</mat-icon>
-              <span>{{ estaExpandido ? 'Mostrar menos' : 'Mostrar mais' }}</span>
-            </button>
-            
-            <div class="flex items-center gap-1">
-              <button matTooltip="Copiar conteúdo" class="flex items-center justify-center p-1.5 rounded-xl hover:bg-slate-100 transition-colors">
-                <mat-icon class="text-base w-4 h-4 flex items-center justify-center scale-80">content_copy</mat-icon>
-              </button>
-
-              <button class="flex items-center justify-center p-1.5 rounded-xl hover:bg-slate-100 transition-colors">
-                <mat-icon matTooltip="Abrir referência em nova aba" class="text-base w-4 h-4 flex items-center justify-center scale-80">open_in_new</mat-icon>
-              </button>
-            </div>
-          </div>
-
-        </div>
-        
-        @if (!$last) {
-          <hr class="border-slate-100 my-2" />
-        }
+        <app-cartao-referencia
+          [referencia]="referencia"
+          [contexto]="'referencias'"
+          (aoRejeitar)="removerReferencia($index)"/>   
+        @if (!$last) { <hr class="border-slate-100 my-2" /> }
       }
     </div>
   }

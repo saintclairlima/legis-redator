@@ -1,4 +1,5 @@
 import { Documento } from "./documento.model";
+import { Referencia } from "./referencia.model";
 
 export enum RotuloTipoElemento {
   Epigrafe = 'Epígrafe',
@@ -76,15 +77,6 @@ export class TipoElemento{
 export class SituacaoElemento{
   id: number;
   rotulo: RotuloSituacaoElemento;
-}
-
-export class Referencia {
-  id?: number;
-  texto: string;
-  metadados: string;
-  titulo: string;
-  autor: string;
-  score: number;
 }
 
 export class Elemento {

@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, QueryList, ViewChildren, WritableSignal, effect, input, model, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { DtoCriacaoElemento, Elemento, RotuloSituacaoElemento, RotuloTipoElemento, getSituacaoElemento, getTipoElemento } from '../../../entidades/elemento.model';
+import { AlertaService } from '../../../services/alerta.service';
 import { ElementoService } from '../../../services/http/elemento.service';
 import { BlocoEdicao } from '../bloco-edicao/bloco-edicao';
 import { DadosBlocoEmFoco } from '../types';
-import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
   selector: 'app-area-edicao',

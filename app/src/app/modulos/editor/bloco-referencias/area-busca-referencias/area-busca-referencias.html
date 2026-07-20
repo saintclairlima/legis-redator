@@ -1,0 +1,104 @@
+<!-- BARRA DE BUSCA -->
+<div class="mt-3 mb-4 flex items-center w-full max-w-3xl bg-white border border-slate-200 rounded-full px-4 py-1.5 focus-within:border-slate-300 transition-all">
+  <input 
+    #campoBusca
+    type="text" 
+    placeholder="Pesquisar usando o texto do dispositivo..." 
+    class="flex-1 bg-transparent border-none outline-none text-sm text-slate-700 placeholder:text-slate-400 h-8"
+    (keydown.enter)="realizarBusca(campoBusca.value)"
+    (input)="null" 
+  />
+
+  @if (campoBusca.value.length > 0) {
+    <button 
+      (click)="campoBusca.value = ''; campoBusca.focus()"
+      matTooltip="Limpar"
+      class="flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full p-1 transition-colors mr-1 shrink-0">
+      <mat-icon class="text-base w-5 h-5 flex items-center justify-center scale-75">close</mat-icon>
+    </button>
+  }
+
+  <div class="w-px h-6 bg-slate-200 mx-3 hidden sm:block"></div>
+  
+  <div class="flex items-center gap-1 mr-3 shrink-0">
+    <button 
+      [matMenuTriggerFor]="menuResultados"
+      matTooltip="Quantidade de resultados"
+      class="flex items-center justify-center gap-1 bg-transparent text-sm text-slate-500 rounded outline-none cursor-pointer hover:bg-slate-200 transition-colors border-none py-1.5 px-2 font-medium">
+      <span>{{numResultados()}}</span> 
+    </button>
+
+    <mat-menu #menuResultados="matMenu" xPosition="after" class="min-w-0 rounded-xl mt-1">
+      <div mat-menu-item class="text-sm !text-slate-500 hover:bg-slate-50 hover:text-blue-500 transition-colors" (click)="alterarNumResultados(5)">
+        5 resultados
+      </div>
+      <div mat-menu-item class="text-sm !text-slate-500 hover:bg-slate-50 hover:text-blue-500 transition-colors" (click)="alterarNumResultados(10)">
+        10 resultados
+      </div>
+      <div mat-menu-item class="text-sm !text-slate-500 hover:bg-slate-50 hover:text-blue-500 transition-colors" (click)="alterarNumResultados(15)">
+        15 resultados
+      </div>
+      <div mat-menu-item class="text-sm !text-slate-500 hover:bg-slate-50 hover:text-blue-500 transition-colors" (click)="alterarNumResultados(20)">
+        20 resultados
+      </div>
+    </mat-menu>
+  </div>
+  
+  <button 
+    (click)="realizarBusca(campoBusca.value)"
+    matTooltip="Realizar busca"
+    class="flex text-slate-500 items-center justify-center hover:bg-slate-200 rounded-full p-1.5 transition-colors shrink-0">
+    <mat-icon class="text-base w-5 h-5 flex items-center justify-center scale-90">search</mat-icon>
+  </button>
+</div>
+
+<!-- ÁREA DE RESULTADOS -->
+@if (resultadosPesquisa().length > 0) {
+
+  <div
+    class="max-w-3xl rounded border border-slate-200 bg-white overflow-hidden animate-fade-in">
+    <!-- Cabeçalho -->
+    <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+      <div>
+        <div class="text-slate-500">Resultados da busca</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          (click)="aceitarTodosResultados()"
+          matTooltip="Adiciona todos os resultados à lista de referências"
+          class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-emerald-100 hover:text-emerald-500 transition-colors">
+          <mat-icon>
+            playlist_add_check
+          </mat-icon>
+          Aceitar todos
+        </button>
+        <button
+          (click)="limparResultados()"
+          matTooltip="Limpa todos os resultados da busca feita"
+          class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-red-50 hover:text-red-500 transition-colors">
+          <mat-icon>
+            playlist_remove
+          </mat-icon>
+          Descartar todos
+        </button>
+      </div>
+    </div>
+
+    <!-- Resultados da busca -->
+    <div class="max-h-[550px] overflow-y-auto">
+      @for (referencia of resultadosPesquisa(); track $index) {
+        <div class="px-5 py-4">
+          <app-cartao-referencia
+            [referencia]="referencia"
+            [contexto]="'resultadosBusca'"
+            (aoAceitar)="aceitarResultado($index)"
+            (aoRejeitar)="descartarResultado($index)">
+          </app-cartao-referencia>
+        </div>
+        @if (!$last) {
+          <hr class="border-slate-100" />
+        }
+      }
+    </div>
+  </div>
+}

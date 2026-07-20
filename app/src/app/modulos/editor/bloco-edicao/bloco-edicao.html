@@ -12,8 +12,11 @@
     <div #elementoEditavel [attr.data-id]="dados().id" class="bloco-edicao"></div>
     
     <app-bloco-referencias
-      [referencias]="dados().referencias || []">
-    </app-bloco-referencias>
+      [idElemento]="dados().id"
+      [textoBase]="dados().texto"
+      [(blocoReferenciasAberto)]="blocoReferenciasAberto"
+      [referencias]="dados().referencias || []"
+      (aoAtualizarReferencias)="aoAtualizarReferencias($event)"/>
   </div>
 
   <!-- Menu de Adição de Bloco -->

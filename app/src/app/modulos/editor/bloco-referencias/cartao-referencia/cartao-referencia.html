@@ -1,0 +1,91 @@
+<div class="flex flex-col gap-4 w-full">
+  
+  <div class="flex items-start justify-between gap-4">
+    <div class="flex items-start gap-3">
+      <div class="flex flex-col select-text">
+        <div class="text-slate-600 text-sm leading-tight">{{ referencia().titulo }}</div>
+        <span class="text-xs font-medium text-slate-400 mt-0.5">{{ referencia().autor }}</span>
+      </div>
+    </div>
+
+    @let porcRelevancia = (1.0 - referencia().score);
+    <div class="flex items-center gap-3 shrink-0">
+      <span class="px-2.5 py-1 text-xs rounded-full" [ngClass]="getClasseBadge(porcRelevancia)">
+        {{ getRotuloRelevancia(porcRelevancia) }}
+      </span>
+      <span class="text-sm text-slate-500">
+        {{ porcRelevancia | percent:'1.0-0' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="relative bg-slate-50 p-4 rounded-xl w-full overflow-hidden">
+    <div class="flex w-full">
+      <span class="text-4xl text-emerald-500 font-bold font-serif shrink-0">“</span>
+      <p appVerificarTruncado
+        (alteracaoStatus)="aoMudarTruncamento($event)"
+        class="flex-1 min-w-0 [overflow-wrap:anywhere] pl-2 pt-2 text-xs text-slate-600 leading-relaxed italic whitespace-pre-line"
+        [class.line-clamp-3]="!estaExpandido()">
+        {{ referencia().texto }}
+      </p>
+    </div>
+  </div>
+
+  <div class="flex justify-between items-center text-xs font-medium pt-2">
+    
+    <button
+      [matTooltip]="estaExpandido() ? 'Mostrar menos' : 'Mostrar mais'" 
+      (click)="toggleTexto()"
+      [class.invisible]="!exibirBotaoExpandir()"
+      class="flex items-center justify-center p-1.5 rounded-xl text-blue-400 hover:bg-slate-100 transition-colors">
+      <mat-icon class="text-base w-4 h-4 flex items-center justify-center">{{ estaExpandido() ? 'expand_less' : 'expand_more' }}</mat-icon>
+      <span class="ml-1">{{ estaExpandido() ? 'Mostrar menos' : 'Mostrar mais' }}</span>
+    </button>
+    
+    @if(contexto() === 'referencias') {
+      <div class="flex items-center gap-1">
+        <button
+          (click)="copiarConteudoAreaTransferencia()"
+          class="flex items-center justify-center p-1.5 rounded-xl text-sm text-slate-500 hover:text-blue-400 hover:bg-slate-100 transition-colors"
+          [matTooltip]="conteudoCopiado() ? 'Copiado!' : 'Copiar conteúdo'">
+          <mat-icon class="text-base w-4 h-4 flex items-center justify-center">
+            {{ conteudoCopiado() ? 'done' : 'content_copy' }}
+          </mat-icon>
+        </button>
+
+        <a
+          [href]="urlDocumentoInteiro()"
+          target="_blank"
+          class="flex items-center justify-center p-1.5 rounded-xl text-sm text-slate-500 hover:text-blue-400 hover:bg-slate-100 transition-colors"
+          matTooltip="Abrir documento inteiro">
+          <mat-icon class="text-base w-4 h-4 flex items-center justify-center">open_in_new</mat-icon>
+        </a>
+
+        <button
+          (click)="rejeitar()"
+          class="flex items-center justify-center p-1.5 rounded-xl text-sm text-slate-500 hover:text-blue-400 hover:bg-slate-100 transition-colors"
+          matTooltip="Remover referência">
+          <mat-icon class="text-base w-4 h-4 flex items-center justify-center">delete_outline</mat-icon>
+        </button>
+      </div>
+    } 
+    
+    @if (contexto() === 'resultadosBusca') {
+      <div class="flex items-center gap-1">
+        <button
+          (click)="aceitar()"
+          class="flex items-center justify-center p-1.5 rounded-xl text-emerald-600 hover:bg-emerald-100 hover:text-emerald-500 transition-colors"
+          matTooltip="Aceitar como referência">
+          <mat-icon class="text-base w-4 h-4 flex items-center justify-center">check_outline</mat-icon>
+        </button>
+
+        <button
+          (click)="rejeitar()"
+          class="flex items-center justify-center p-1.5 rounded-xl text-red-600 hover:bg-red-50 hover:text-red-500 transition-colors"
+          matTooltip="Descartar resultado">
+          <mat-icon class="text-base w-4 h-4 flex items-center justify-center">close_outline</mat-icon>
+        </button>
+      </div>
+    }
+  </div>
+</div>

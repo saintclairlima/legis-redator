@@ -1,4 +1,5 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { AlgoritmoHash } from '../algoritmo-hash.enum';
 
 export class CreateReferenciaDto {
   @IsString()
@@ -6,8 +7,12 @@ export class CreateReferenciaDto {
   texto: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'O hash da referência é obrigatório para integridade' })
-  hash: string;
+  @IsOptional()
+  hash?: string;
+
+  @IsEnum(AlgoritmoHash)
+  @IsOptional()
+  algoritmoHash?: AlgoritmoHash;
 
   @IsString()
   @IsNotEmpty({ message: 'Os metadados são obrigatórios (podem ser um JSON stringificado)' })

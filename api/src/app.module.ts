@@ -18,6 +18,7 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AutenticacaoGuard } from './autenticacao/autenticacao.guard';
 import { PermissaoDocumentoModule } from './permissao-documento/permissao-documento.module';
+import { ReferenciaElementoModule } from './referencia-elemento/referencia-elemento.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { PermissaoDocumentoModule } from './permissao-documento/permissao-docume
     UsuarioModule,
     EntidadeBaseModule,
     AutenticacaoModule,
-    PermissaoDocumentoModule],
+    PermissaoDocumentoModule,
+    ReferenciaElementoModule],
   controllers: [AppController],
   providers: [
     AppService,

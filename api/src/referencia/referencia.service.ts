@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateReferenciaDto } from './dto/create-referencia.dto';
 import { UpdateReferenciaDto } from './dto/update-referencia.dto';
 import { ReferenciaEntity } from './entities/referencia.entity';
+import { gerarHashReferencia } from './hash.utils';
 
 @Injectable()
 export class ReferenciaService {
@@ -14,7 +15,12 @@ export class ReferenciaService {
   ) {}
   
   create(createReferenciaDto: CreateReferenciaDto): Promise<ReferenciaEntity> {
-    const referencia = this.referenciaRepo.create(createReferenciaDto);
+    const dadosReferencia: CreateReferenciaDto = {
+      ...createReferenciaDto,
+      ...gerarHashReferencia(createReferenciaDto.texto),
+    }
+
+    const referencia = this.referenciaRepo.create(dadosReferencia);
     return this.referenciaRepo.save(referencia);
   }
 
@@ -36,7 +42,7 @@ export class ReferenciaService {
     try {
       return await this.referenciaRepo.findOneOrFail({
         where: { id },
-        relations: { elementos: true }
+        relations: { elementosReferencia: true }
       });
     } catch {
       throw new NotFoundException(`Referência ${id} não encontrada`);
@@ -45,7 +51,13 @@ export class ReferenciaService {
 
   async update(id: number, updateReferenciaDto: UpdateReferenciaDto): Promise<ReferenciaEntity> {
     const referencia = await this.findOne(id);
-    Object.assign(referencia, updateReferenciaDto);
+    const dadosReferencia: UpdateReferenciaDto = { ...updateReferenciaDto };
+    if (dadosReferencia.texto !== undefined && dadosReferencia.texto !== referencia.texto) {
+      const dadosHash = gerarHashReferencia(dadosReferencia.texto);
+      Object.assign(dadosReferencia, dadosHash);
+    }
+    Object.assign(referencia, dadosReferencia);
+    
     return this.referenciaRepo.save(referencia);
   }
 
